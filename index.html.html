@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- SEO Meta Tags -->
+    <title>WokeDar - Political Bias Detector | Analyze Text for Woke Content</title>
+    <meta name="description" content="WokeDar analyzes text, URLs, and audio to detect political bias and woke content. Get instant scores with Extreme Analysis technology. Free daily scans available.">
+    <meta name="keywords" content="woke detector, political bias analyzer, text analysis, bias detection, content analysis, political correctness checker">
+    <meta name="author" content="WokeDar">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wokedar.com">
+    <meta property="og:title" content="WokeDar - Political Bias Detector">
+    <meta property="og:description" content="Analyze text for political bias and woke content. Get instant scores with Extreme Analysis technology.">
+    <meta property="og:image" content="https://wokedar.com/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://wokedar.com">
+    <meta property="twitter:title" content="WokeDar - Political Bias Detector">
+    <meta property="twitter:description" content="Analyze text for political bias and woke content. Get instant scores with Extreme Analysis technology.">
+    <meta property="twitter:image" content="https://wokedar.com/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+    --bg-primary: #0f0f0f; --bg-secondary: #1a1a2e; --bg-tertiary: #16213e;
+    --text-primary: #fff; --text-secondary: #888;
+    --accent-cyan: #00d4ff; --accent-purple: #7b2cbf; --accent-gold: #ffd700;
+    --safe: #00ff88; --moderate: #ff9500; --critical: #ff4757;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+    min-height: 100vh; color: var(--text-primary); padding: 20px;
+}
+.container { max-width: 500px; margin: 0 auto; }
+
+.brand-header { text-align: center; padding: 20px 0 10px; }
+.logo {
+    font-size: 48px; font-weight: 800;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    cursor: pointer; user-select: none; display: inline-block;
+}
+.tagline { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+.pro-badge {
+    display: inline-block; background: linear-gradient(90deg, var(--accent-gold), #ffaa00);
+    color: #000; padding: 4px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; margin-top: 10px;
+}
+
+.gauge-section { margin: 20px 0; text-align: center; }
+.gauge-container { position: relative; width: 280px; height: 140px; margin: 0 auto; }
+.gauge-ring {
+    position: absolute; width: 280px; height: 280px; border-radius: 50%;
+    top: 0; left: 0;
+    background: conic-gradient(from 270deg, var(--safe) 0deg 60deg, var(--moderate) 60deg 120deg, var(--critical) 120deg 180deg, transparent 180deg 360deg);
+    -webkit-mask: radial-gradient(circle at center, transparent 55%, black 55%, black 85%, transparent 85%);
+    mask: radial-gradient(circle at center, transparent 55%, black 55%, black 85%, transparent 85%);
+    clip-path: inset(0 0 50% 0);
+}
+.gauge-needle {
+    position: absolute; width: 4px; height: 110px;
+    background: linear-gradient(180deg, var(--accent-cyan) 0%, #fff 100%);
+    bottom: 0; left: 50%; transform-origin: bottom center;
+    transform: translateX(-50%) rotate(-90deg);
+    border-radius: 2px; transition: transform 1s ease;
+    z-index: 10;
+}
+.gauge-needle::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%;
+    transform: translateX(-50%); width: 16px; height: 16px;
+    background: var(--accent-cyan); border-radius: 50%;
+}
+.gauge-labels {
+    position: relative; width: 280px; height: 30px; margin: 10px auto 0;
+}
+.gauge-label {
+    position: absolute; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    bottom: 0;
+}
+.gauge-label.not-woke { color: var(--safe); left: 0; transform: translateX(-10%); }
+.gauge-label.moderate { color: var(--moderate); left: 50%; transform: translateX(-50%); }
+.gauge-label.very-woke { color: var(--critical); right: 0; transform: translateX(10%); }
+.status-text {
+    text-align: center; font-size: 16px; font-weight: 700;
+    text-transform: uppercase; margin-top: 15px;
+}
+
+.region-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
+.region-tab {
+    padding: 8px 16px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: transparent; color: var(--text-secondary);
+    font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+.region-tab.active {
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    border-color: transparent; color: #fff;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.input-section {
+    background: rgba(255,255,255,0.05); border-radius: 20px;
+    padding: 20px; margin-bottom: 15px;
+}
+.tab-title { color: var(--accent-gold); margin-bottom: 15px; font-size: 16px; }
+
+.input-modes { display: flex; gap: 10px; margin-bottom: 15px; }
+.input-mode {
+    flex: 1; padding: 10px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: transparent; color: var(--text-secondary);
+    font-size: 13px; cursor: pointer; text-align: center;
+}
+.input-mode.active {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--accent-cyan);
+    color: #fff;
+}
+
+textarea, input[type="url"], input[type="text"] {
+    width: 100%; min-height: 50px; background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    padding: 15px; color: #fff; font-size: 16px;
+}
+textarea { min-height: 120px; resize: vertical; }
+input[type="url"] { min-height: auto; height: 50px; }
+
+.url-input-group { display: none; }
+.url-input-group.active { display: block; }
+
+.fetch-status {
+    padding: 10px; border-radius: 8px; margin-top: 10px;
+    font-size: 13px; display: none;
+}
+.fetch-status.loading {
+    display: block; background: rgba(0,212,255,0.1);
+    border: 1px solid var(--accent-cyan);
+}
+.fetch-status.error {
+    display: block; background: rgba(255,71,87,0.1);
+    border: 1px solid var(--critical);
+}
+.fetch-status.success {
+    display: block; background: rgba(0,255,136,0.1);
+    border: 1px solid var(--safe);
+}
+
+.button-row { display: flex; gap: 10px; margin-top: 15px; }
+.btn {
+    flex: 1; padding: 15px; border-radius: 12px; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.btn-primary {
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); color: #fff;
+}
+.btn-record { background: linear-gradient(90deg, #ff4757, #ff6348); color: #fff; }
+.btn-secondary {
+    background: rgba(255,255,255,0.1); color: #fff;
+    border: 1px solid rgba(255,255,255,0.2); margin-top: 10px; width: 100%;
+}
+
+.results-section {
+    background: rgba(255,255,255,0.05); border-radius: 20px;
+    padding: 20px; margin-bottom: 15px; display: none;
+}
+.results-section.visible { display: block; }
+.score-display {
+    text-align: center; font-size: 48px; font-weight: 800;
+    margin-bottom: 10px;
+}
+.raw-score {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+.analysis-breakdown {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+}
+.analysis-breakdown h4 {
+    color: var(--accent-gold);
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+.source-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.source-item:last-child { border-bottom: none; }
+.source-name { color: var(--text-secondary); font-size: 13px; }
+.source-score { font-weight: bold; font-size: 13px; }
+.source-raw { color: var(--text-secondary); font-size: 11px; }
+.amplification-badge {
+    display: inline-block;
+    background: linear-gradient(90deg, #ff4757, #ff6348);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 10px;
+}
+
+/* CUSTOM PHRASES STYLES */
+.custom-phrases-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+.custom-phrases-section h4 {
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.custom-phrases-section p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+.strength-btn {
+    transition: all 0.2s;
+    border: 2px solid;
+    cursor: pointer;
+}
+.strength-btn:hover {
+    border-color: var(--accent-cyan) !important;
+}
+.strength-btn small {
+    font-size: 10px;
+    opacity: 0.7;
+}
+.custom-phrase-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+.custom-phrase-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.custom-phrase-item .phrase-text {
+    flex: 1;
+    color: #fff;
+}
+.custom-phrase-item .phrase-score {
+    font-weight: bold;
+    margin-right: 10px;
+    color: var(--critical);
+}
+.delete-btn {
+    background: rgba(255,71,87,0.3);
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.delete-btn:hover {
+    background: rgba(255,71,87,0.5);
+}
+.empty-phrases {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 20px;
+    font-size: 13px;
+}
+.phrase-count {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* PRO LOCKED OVERLAY FOR CUSTOM PHRASES */
+.custom-phrases-locked {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.custom-phrases-locked h4 {
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.custom-phrases-locked p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+.custom-phrases-locked .lock-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+/* HISTORY TAB STYLES */
+.history-list { max-height: 300px; overflow-y: auto; }
+.history-item {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.history-item:hover { background: rgba(255,255,255,0.05); }
+.history-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.history-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.history-score { font-weight: 700; font-size: 16px; }
+.history-date { font-size: 11px; color: var(--text-secondary); }
+.history-source {
+    font-size: 10px;
+    color: var(--accent-cyan);
+    margin-left: 8px;
+}
+
+/* COMPARE TAB STYLES */
+.compare-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.compare-inputs textarea { min-height: 80px; font-size: 13px; }
+.compare-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+.compare-result {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+.compare-result h5 {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+.compare-result .score { font-size: 32px; font-weight: 800; }
+.compare-result .label { font-size: 11px; margin-top: 5px; }
+.compare-winner {
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(123,44,191,0.2));
+    border: 1px solid var(--accent-cyan);
+}
+#compareWinner { text-align: center; margin-top: 15px; font-weight: 600; }
+
+/* TRENDS TAB STYLES */
+.trend-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.trend-stat {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+.trend-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+}
+.trend-stat-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+.trend-chart {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 5px;
+}
+.trend-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
+    border-radius: 4px 4px 0 0;
+    min-height: 5px;
+    position: relative;
+    transition: all 0.3s;
+}
+.trend-bar:hover { opacity: 0.8; }
+.trend-bar::after {
+    content: attr(data-score);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.nav-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+.nav-tab {
+    flex: 1; padding: 12px 8px; background: transparent; border: none;
+    color: var(--text-secondary); font-size: 13px; cursor: pointer;
+    border-radius: 8px; text-align: center;
+}
+.nav-tab.active { background: rgba(255,255,255,0.1); color: #fff; }
+.nav-tab.locked { opacity: 0.4; cursor: not-allowed; }
+.nav-tab.locked::after { content: " 🔒"; font-size: 10px; }
+
+.upgrade-section { text-align: center; margin: 15px 0; }
+.upgrade-section button {
+    background: linear-gradient(90deg, var(--accent-gold), #ffaa00);
+    color: #000; border: none; padding: 14px 32px;
+    border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer;
+}
+.upgrade-section .sub { 
+    color: var(--accent-gold); 
+    font-weight: 600; 
+    font-size: 13px; 
+    margin-top: 8px;
+}
+.upgrade-section .sub-note {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.payment-guarantee {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.scan-counter {
+    text-align: center; background: rgba(0,255,136,0.1);
+    border: 1px solid var(--safe); border-radius: 10px;
+    padding: 15px; margin: 15px 0;
+}
+.scan-counter .count { font-size: 28px; font-weight: bold; color: var(--safe); }
+.scan-counter .label { font-size: 12px; color: var(--text-secondary); }
+.scan-counter.limit { background: rgba(255,71,87,0.1); border-color: var(--critical); }
+.scan-counter.limit .count { color: var(--critical); }
+
+.why-pro {
+    background: rgba(255,255,255,0.03); border-radius: 12px;
+    padding: 15px; margin: 15px 0; text-align: center;
+}
+.why-pro h4 { color: var(--accent-gold); font-size: 14px; margin-bottom: 10px; }
+.why-pro p { color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+.onetime-badge {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(255,215,0,0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255,215,0,0.3);
+}
+.onetime-badge strong {
+    color: var(--accent-gold);
+    font-size: 15px;
+    display: block;
+    margin-bottom: 4px;
+}
+.onetime-badge div {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.upgrade-banner {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,170,0,0.1));
+    border: 1px solid rgba(255,215,0,0.3); border-radius: 16px;
+    padding: 20px; text-align: center; display: none;
+}
+.upgrade-banner.visible { display: block; }
+.upgrade-banner h3 { color: var(--accent-gold); margin-bottom: 12px; }
+
+.price-highlight {
+    background: rgba(255,215,0,0.2);
+    border: 2px solid var(--accent-gold);
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+}
+.price-highlight .price {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent-gold);
+}
+.price-highlight .terms {
+    font-size: 13px;
+    color: #fff;
+    margin-top: 5px;
+}
+.price-highlight .sublabel {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+}
+
+.upgrade-benefits { text-align: left; margin: 15px 0; padding-left: 25px; }
+.upgrade-benefits li {
+    color: #ccc; font-size: 14px; margin-bottom: 8px; list-style: none; position: relative;
+}
+.upgrade-benefits li::before { content: "✓"; color: var(--accent-gold); position: absolute; left: -20px; }
+.upgrade-benefits li strong { color: #fff; }
+
+.trust-badges {
+    text-align: center;
+    margin: 15px 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 15px; }
+.empty-state-text { font-size: 14px; }
+
+.toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(0,0,0,0.9); color: #fff;
+    padding: 15px 25px; border-radius: 30px; font-size: 14px;
+    opacity: 0; transition: all 0.3s; z-index: 1000;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.source-preview {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    max-height: 100px;
+    overflow-y: auto;
+}
+.source-preview strong {
+    color: var(--accent-cyan);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="brand-header">
+            <div class="logo" id="logo">WokeDar</div>
+            <div class="tagline">Political Bias Detector</div>
+            <div id="proBadgeContainer"></div>
+        </div>
+        
+        <!-- GAUGE -->
+        <div class="gauge-section">
+            <div class="gauge-container">
+                <div class="gauge-ring"></div>
+                <div class="gauge-needle" id="gaugeNeedle"></div>
+            </div>
+            <div class="gauge-labels">
+                <span class="gauge-label not-woke">NOT WOKE</span>
+                <span class="gauge-label moderate">MODERATE</span>
+                <span class="gauge-label very-woke">VERY WOKE</span>
+            </div>
+            <div class="status-text" id="statusText">Ready to scan</div>
+        </div>
+        
+        <!-- REGION TABS -->
+        <div class="region-tabs">
+            <div class="region-tab active" onclick="setRegion('usa', event)">🇺🇸 USA</div>
+            <div class="region-tab" onclick="setRegion('uk', event)">🇬🇧 UK</div>
+            <div class="region-tab" onclick="setRegion('canada', event)">🇨🇦 Canada</div>
+            <div class="region-tab" onclick="setRegion('ausnz', event)">🇦🇺 Aus/NZ</div>
+            <div class="region-tab" onclick="setRegion('germany', event)">🇩🇪 Germany</div>
+        </div>
+        
+        <!-- SCAN TAB -->
+        <div class="tab-content active" id="scanTabContent">
+            <div class="input-section">
+                <!-- Input Mode Switcher -->
+                <div class="input-modes">
+                    <div class="input-mode active" onclick="setInputMode('text')">📝 Text</div>
+                    <div class="input-mode" onclick="setInputMode('url')">🌐 URL</div>
+                </div>
+                
+                <!-- Text Input -->
+                <div class="text-input-group" id="textInputGroup">
+                    <textarea id="textInput" placeholder="Paste text to analyze..."></textarea>
+                </div>
+                
+                <!-- URL Input -->
+                <div class="url-input-group" id="urlInputGroup">
+                    <input type="url" id="urlInput" placeholder="https://example.com/article" />
+                    <div class="fetch-status" id="fetchStatus"></div>
+                    <div class="source-preview" id="sourcePreview" style="display: none;"></div>
+                </div>
+                
+                <div class="button-row">
+                    <button class="btn btn-record" onclick="showToast('Audio free for all')">🎤 Record</button>
+                    <button class="btn btn-primary" onclick="analyzeContent()">🔍 Analyze</button>
+                </div>
+                <button class="btn btn-secondary" onclick="clearContent()">🗑️ Clear</button>
+            </div>
+            
+            <div class="results-section" id="results">
+                <div class="score-display" id="scoreDisplay">0%</div>
+                <div class="raw-score" id="rawScore"></div>
+                <div id="analysisText"></div>
+                <div class="analysis-breakdown" id="analysisBreakdown" style="display: none;">
+                    <h4>📊 Analysis Breakdown <span class="amplification-badge">EXTREME 3.0x</span></h4>
+                    <div id="breakdownContent"></div>
+                </div>
+            </div>
+            
+            <!-- CUSTOM PHRASES SECTION - PRO ONLY -->
+            <div id="customPhrasesContainer">
+                <!-- Content injected by JS based on Pro status -->
+            </div>
+        </div>
+        
+        <!-- HISTORY TAB -->
+        <div class="tab-content" id="historyTabContent">
+            <div class="input-section">
+                <h4 class="tab-title">📊 Scan History</h4>
+                <div id="historyList" class="history-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">No scans yet. Start analyzing!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COMPARE TAB -->
+        <div class="tab-content" id="compareTabContent">
+            <div class="input-section">
+                <h4 class="tab-title">⚖️ Compare Two Texts</h4>
+                <div class="compare-inputs">
+                    <textarea id="compareInput1" placeholder="First text..."></textarea>
+                    <textarea id="compareInput2" placeholder="Second text..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="compareTexts()" style="width:100%;">Compare</button>
+                <div id="compareResults" style="display:none;">
+                    <div class="compare-results">
+                        <div class="compare-result" id="compareResult1">
+                            <h5>Text 1</h5>
+                            <div class="score" id="compareScore1">--</div>
+                            <div class="label" id="compareLabel1">--</div>
+                        </div>
+                        <div class="compare-result" id="compareResult2">
+                            <h5>Text 2</h5>
+                            <div class="score" id="compareScore2">--</div>
+                            <div class="label" id="compareLabel2">--</div>
+                        </div>
+                    </div>
+                    <div id="compareWinner"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TRENDS TAB -->
+        <div class="tab-content" id="trendsTabContent">
+            <div class="input-section">
+                <h4 class="tab-title">📈 Trends</h4>
+                <div class="trend-stats">
+                    <div class="trend-stat">
+                        <div class="trend-stat-value" id="totalScans">0</div>
+                        <div class="trend-stat-label">Total Scans</div>
+                    </div>
+                    <div class="trend-stat">
+                        <div class="trend-stat-value" id="avgScore">--</div>
+                        <div class="trend-stat-label">Avg Score</div>
+                    </div>
+                    <div class="trend-stat">
+                        <div class="trend-stat-value" id="highestScore">--</div>
+                        <div class="trend-stat-label">Highest</div>
+                    </div>
+                </div>
+                <div class="trend-chart" id="trendChart">
+                    <div class="empty-state">
+                        <div class="empty-state-text">No data yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NAV TABS -->
+        <div class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" id="scanTab" onclick="switchTab('scan')">🔍 Scan</button>
+            <button class="nav-tab locked" id="historyTab" onclick="switchTab('history')">📊 History</button>
+            <button class="nav-tab locked" id="compareTab" onclick="switchTab('compare')">⚖️ Compare</button>
+            <button class="nav-tab locked" id="trendsTab" onclick="switchTab('trends')">📈 Trends</button>
+        </div>
+        
+        <!-- UPGRADE SECTIONS -->
+        <div class="why-pro" id="whyPro">
+            <h4>🚀 Why Upgrade to Pro?</h4>
+            <p>Pro unlocks <strong>200 daily scans</strong> vs just 3 on Free. Track patterns with History, compare texts side-by-side, add custom woke phrases, and spot trends over time.</p>
+            <div class="onetime-badge">
+                <strong>✓ $4.99 ONE-TIME PURCHASE</strong>
+                <div>No subscription • No monthly fees • Pay once, own forever</div>
+            </div>
+        </div>
+        
+        <div class="upgrade-section" id="upgradeBtnSection">
+            <a href="https://tobindfjt.gumroad.com/l/wokedar" target="_blank" style="display:inline-block;padding:14px 32px;background:linear-gradient(90deg, var(--accent-gold), #ffaa00);color:#000;border:none;border-radius:25px;font-weight:700;font-size:16px;cursor:pointer;text-decoration:none;">⭐ Upgrade to Pro</a>
+            <div class="sub">✓ ONE-TIME PAYMENT • NO SUBSCRIPTION</div>
+            <div class="sub-note">Just $4.99 once — never pay again • 200 daily scans</div>
+            <div class="payment-guarantee">
+                <span>✓ One-time fee</span>
+                <span>✓ No subscription</span>
+                <span>✓ Lifetime access</span>
+            </div>
+        </div>
+        
+        <div class="scan-counter" id="scanCounter">
+            <div class="count" id="scansRemaining">3</div>
+            <div class="label" id="scansLabel">Free Daily Scans Remaining</div>
+        </div>
+        
+        <div class="upgrade-banner" id="upgradeBanner">
+            <h3>🚀 Upgrade to Pro</h3>
+            
+            <div class="price-highlight">
+                <div class="price">$4.99</div>
+                <div class="terms">ONE-TIME PAYMENT • NEVER PAY AGAIN</div>
+                <div class="sublabel">No subscription • No hidden fees • Instant activation</div>
+            </div>
+            
+            <ul class="upgrade-benefits">
+                <li><strong>200 daily scans</strong> — vs 3 on free</li>
+                <li>Full scan history & analytics</li>
+                <li>Side-by-side text comparison</li>
+                <li><strong>Add custom woke phrases</strong> — stay ahead of new terms</li>
+                <li>Trend charts & insights</li>
+                <li>PDF exports</li>
+                <li>Priority processing</li>
+            </ul>
+            
+            <div class="trust-badges">
+                <span>🔒 Secure payment</span>
+                <span>⚡ Instant activation</span>
+                <span>♾️ Lifetime access</span>
+            </div>
+            
+            <button class="btn btn-primary" onclick="goToStripeCheckout()" style="margin-top: 15px;">
+                Get Pro for $4.99 — One Time
+            </button>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+
+    <script>
+     // EXTREME AMPLIFICATION FACTOR
+const AMPLIFICATION = 3.0;
+
+// STRIPE PAYMENT LINK - Replace with your actual link
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/14A14ncWWfZe4nx1iU6Vq00';
+
+// Color constants for JavaScript (can't use CSS vars in JS)
+const COLORS = {
+    safe: '#00ff88',
+    moderate: '#ff9500',
+    critical: '#ff4757'
+};
+
+// Current input mode
+let currentInputMode = 'text';
+let fetchedUrlContent = '';
+let currentUrl = '';
+
+// CUSTOM PHRASES STORAGE - now only stores woke phrases
+let customPhrases = JSON.parse(localStorage.getItem('wokedar_custom_phrases') || '[]');
+let selectedStrength = 50;
+
+// BASE PRIORITY PHRASES (built-in)
+const basePriorityPhrases = {
+    // Anti-male sentiment (woke)
+    'men are bad': { score: 50, type: 'woke', category: 'anti-male' },
+    'men are trash': { score: 50, type: 'woke', category: 'anti-male' },
+    'men are evil': { score: 50, type: 'woke', category: 'anti-male' },
+    'men are the problem': { score: 50, type: 'woke', category: 'anti-male' },
+    'all men are': { score: 45, type: 'woke', category: 'anti-male' },
+    'kill all men': { score: 55, type: 'woke', category: 'anti-male' },
+    'male tears': { score: 45, type: 'woke', category: 'anti-male' },
+    'fragile masculinity': { score: 45, type: 'woke', category: 'anti-male' },
+    'toxic masculinity': { score: 45, type: 'woke', category: 'anti-male' },
+    'mansplaining': { score: 40, type: 'woke', category: 'anti-male' },
+    'manbaby': { score: 40, type: 'woke', category: 'anti-male' },
+    'manbabies': { score: 40, type: 'woke', category: 'anti-male' },
+    
+    // Feminist empowerment (woke)
+    'women can': { score: 35, type: 'woke', category: 'feminism' },
+    'women can do anything': { score: 40, type: 'woke', category: 'feminism' },
+    'future is female': { score: 45, type: 'woke', category: 'feminism' },
+    'smash the patriarchy': { score: 50, type: 'woke', category: 'feminism' },
+    'down with patriarchy': { score: 50, type: 'woke', category: 'feminism' },
+    'girl power': { score: 35, type: 'woke', category: 'feminism' },
+    'female empowerment': { score: 40, type: 'woke', category: 'feminism' },
+    'women empowerment': { score: 40, type: 'woke', category: 'feminism' },
+    'feminist': { score: 40, type: 'woke', category: 'feminism' },
+    'feminism': { score: 40, type: 'woke', category: 'feminism' },
+    'women rights': { score: 35, type: 'woke', category: 'feminism' },
+    'women are strong': { score: 35, type: 'woke', category: 'feminism' },
+    'women are powerful': { score: 35, type: 'woke', category: 'feminism' },
+    'break the glass ceiling': { score: 40, type: 'woke', category: 'feminism' },
+    'gender equality': { score: 35, type: 'woke', category: 'feminism' },
+    'equal pay': { score: 35, type: 'woke', category: 'feminism' },
+    'wage gap': { score: 40, type: 'woke', category: 'feminism' },
+    'gender pay gap': { score: 40, type: 'woke', category: 'feminism' },
+    'manspreading': { score: 35, type: 'woke', category: 'feminism' },
+    'mansplain': { score: 35, type: 'woke', category: 'feminism' },
+    'male privilege': { score: 40, type: 'woke', category: 'feminism' },
+    
+    // Anti-woke phrases (anti)
+    'not all men': { score: -40, type: 'anti', category: 'defensive' },
+    'reverse racism': { score: -35, type: 'anti', category: 'denial' },
+    'all lives matter': { score: -40, type: 'anti', category: 'deflection' },
+    'blue lives matter': { score: -35, type: 'anti', category: 'deflection' },
+    'political correctness': { score: -30, type: 'anti', category: 'rhetoric' },
+    'virtue signaling': { score: -35, type: 'anti', category: 'rhetoric' },
+    'social justice warrior': { score: -35, type: 'anti', category: 'dismissal' },
+    'sjw': { score: -40, type: 'anti', category: 'dismissal' },
+    'cancel culture': { score: -30, type: 'anti', category: 'rhetoric' },
+    'woke mob': { score: -35, type: 'anti', category: 'dismissal' },
+    
+    // Strong woke phrases
+    'black lives matter': { score: 45, type: 'woke', category: 'racial-justice' },
+    'defund the police': { score: 50, type: 'woke', category: 'abolition' },
+    'acab': { score: 50, type: 'woke', category: 'abolition' },
+    'eat the rich': { score: 45, type: 'woke', category: 'class' },
+    'abolish ice': { score: 45, type: 'woke', category: 'immigration' },
+    'land back': { score: 50, type: 'woke', category: 'indigenous' },
+    'decolonize': { score: 50, type: 'woke', category: 'indigenous' },
+    'reparations now': { score: 50, type: 'woke', category: 'racial-justice' },
+    'healthcare is a human right': { score: 40, type: 'woke', category: 'healthcare' },
+    'housing is a human right': { score: 40, type: 'woke', category: 'housing' },
+    'trans rights are human rights': { score: 50, type: 'woke', category: 'trans-rights' },
+    'believe women': { score: 45, type: 'woke', category: 'feminism' },
+    'me too': { score: 45, type: 'woke', category: 'feminism' },
+    'times up': { score: 45, type: 'woke', category: 'feminism' },
+    
+    // Strong anti-woke phrases
+    'build the wall': { score: -45, type: 'anti', category: 'immigration' },
+    'america first': { score: -40, type: 'anti', category: 'nationalism' },
+    'make america great again': { score: -45, type: 'anti', category: 'nationalism' },
+    'maga': { score: -45, type: 'anti', category: 'nationalism' },
+    'pro life': { score: -40, type: 'anti', category: 'abortion' },
+    'pro-life': { score: -40, type: 'anti', category: 'abortion' },
+    'abortion is murder': { score: -50, type: 'anti', category: 'abortion' },
+    'second amendment': { score: -35, type: 'anti', category: 'guns' },
+    'shall not be infringed': { score: -40, type: 'anti', category: 'guns' },
+    'fake news': { score: -35, type: 'anti', category: 'media' },
+    'enemy of the people': { score: -40, type: 'anti', category: 'media' },
+    'deep state': { score: -40, type: 'anti', category: 'conspiracy' },
+    'drain the swamp': { score: -40, type: 'anti', category: 'corruption' },
+    'stop the steal': { score: -50, type: 'anti', category: 'election' },
+    'stolen election': { score: -50, type: 'anti', category: 'election' },
+    'rigged election': { score: -45, type: 'anti', category: 'election' },
+};
+
+// COMBINE base + custom phrases (custom phrases are always woke/positive score)
+function getPriorityPhrases() {
+    const combined = { ...basePriorityPhrases };
+    customPhrases.forEach(phrase => {
+        combined[phrase.text] = { 
+            score: phrase.score, 
+            type: 'woke',
+            category: 'custom',
+            isCustom: true
+        };
+    });
+    return combined;
+}
+
+// INDICATORS
+const supportIndicators = [
+    'great','good','excellent','amazing','wonderful','fantastic','awesome','perfect',
+    'love','like','enjoy','appreciate','support','defend','protect','help',
+    'important','necessary','essential','vital','crucial','critical','needed',
+    'right','just','fair','equitable','moral','ethical','correct','true',
+    'should','must','need to','have to','ought to','require','demand',
+    'celebrate','honor','respect','value','cherish','embrace','welcome',
+    'progress','advance','improve','better','benefit','advantage','gain',
+    'victory','win','success','triumph','achievement','accomplishment',
+    'empower','uplift','elevate','promote','advocate','champion','fight for',
+    'stand with','ally','solidarity','unity','together','inclusive'
+];
+
+const opposeIndicators = [
+    'terrible','awful','horrible','disgusting','evil','immoral',
+    'despise','loathe','abhor','detest','oppose','resist',
+    'unnecessary','pointless','useless','harmful','damaging','destructive',
+    'unfair','unjust','biased','prejudiced','discriminatory',
+    'reject','deny','refuse','block','stop','end','abolish','eliminate',
+    'destroy','ruin','undermine','attack','criticize','condemn','blame',
+    'problem','issue','concern','danger','threat','risk','harm',
+    'failure','lose','loss','defeat','disaster','crisis','catastrophe',
+    'against','versus','vs','anti','opposing','contrary','opposite',
+    'murder','kill','death','die','dead','crime','criminal','illegal'
+];
+
+// ALWAYS-WOKE WORDS
+const alwaysWoke = [
+    'decolonize','decolonization','indigenous','aboriginal','first nations','maori','aotearoa',
+    'treaty','waitangi','sovereignty','self-determination','reparations','restorative justice',
+    'truth and reconciliation','cultural appropriation','appropriation','sacred','ceremony',
+    'systemic racism','structural racism','institutional racism','white supremacy','white privilege',
+    'privilege','intersectionality','microaggression','microaggressions','triggered','trigger warning',
+    'safe space','lived experience','speaking my truth','my truth','bipoc','poc','woc','qtpoc',
+    'marginalized','oppressed','oppression','liberation','emancipation','freedom',
+    'anti-racist','antiracist','allyship','accomplice','co-conspirator'
+];
+
+// ALWAYS-ANTI-WOKE WORDS
+const alwaysAntiWoke = [
+    'woke','wokeness','sjw','social justice warrior','virtue signaling',
+    'political correctness','pc culture','cancel culture','thought police',
+    'identity politics','cultural marxism','marxist','radical left',
+    'snowflake','triggered','safe space','participation trophy',
+    'meritocracy','colorblind','all lives matter','blue lives matter',
+    'western civilization','judeo-christian','traditional values'
+];
+
+// CONTEXT-DEPENDENT TOPICS WITH TYPES
+const contextDependentTopics = {
+    'colonization': { weight: 35, type: 'negative' },
+    'colonialism': { weight: 35, type: 'negative' },
+    'colonial': { weight: 30, type: 'negative' },
+    'settler': { weight: 30, type: 'negative' },
+    'settlers': { weight: 30, type: 'negative' },
+    'indigenous': { weight: 40, type: 'positive' },
+    'native': { weight: 25, type: 'positive' },
+    'aboriginal': { weight: 35, type: 'positive' },
+    'first nations': { weight: 40, type: 'positive' },
+    'maori': { weight: 40, type: 'positive' },
+    'aotearoa': { weight: 45, type: 'positive' },
+    'treaty': { weight: 30, type: 'neutral' },
+    'waitangi': { weight: 40, type: 'positive' },
+    'sovereignty': { weight: 35, type: 'neutral' },
+    'land back': { weight: 50, type: 'positive' },
+    'stolen land': { weight: 45, type: 'negative' },
+    'terra nullius': { weight: 40, type: 'negative' },
+    'decolonize': { weight: 50, type: 'positive' },
+    'decolonization': { weight: 50, type: 'positive' },
+    'reparations': { weight: 40, type: 'positive' },
+    'cultural genocide': { weight: 45, type: 'negative' },
+    'stolen generation': { weight: 45, type: 'negative' },
+    'residential school': { weight: 45, type: 'negative' },
+    'assimilation': { weight: 35, type: 'negative' },
+    'abortion': { weight: 30, type: 'neutral' },
+    'pro-choice': { weight: 35, type: 'positive' },
+    'pro-life': { weight: 35, type: 'negative' },
+    'reproductive rights': { weight: 35, type: 'positive' },
+    'bodily autonomy': { weight: 30, type: 'positive' },
+    'police': { weight: 25, type: 'neutral' },
+    'cops': { weight: 25, type: 'neutral' },
+    'defund': { weight: 40, type: 'positive' },
+    'abolish': { weight: 35, type: 'positive' },
+    'prison': { weight: 25, type: 'negative' },
+    'incarceration': { weight: 25, type: 'negative' },
+    'mass incarceration': { weight: 35, type: 'negative' },
+    'racism': { weight: 30, type: 'negative' },
+    'racist': { weight: 30, type: 'negative' },
+    'white supremacy': { weight: 40, type: 'negative' },
+    'white privilege': { weight: 35, type: 'negative' },
+    'privilege': { weight: 25, type: 'neutral' },
+    'bipoc': { weight: 35, type: 'positive' },
+    'poc': { weight: 25, type: 'positive' },
+    'black lives matter': { weight: 40, type: 'positive' },
+    'blm': { weight: 40, type: 'positive' },
+    'all lives matter': { weight: 35, type: 'negative' },
+    'critical race theory': { weight: 40, type: 'positive' },
+    'crt': { weight: 35, type: 'positive' },
+    'intersectionality': { weight: 35, type: 'positive' },
+    'cultural appropriation': { weight: 35, type: 'negative' },
+    'transgender': { weight: 30, type: 'positive' },
+    'trans': { weight: 30, type: 'positive' },
+    'nonbinary': { weight: 30, type: 'positive' },
+    'pronouns': { weight: 25, type: 'neutral' },
+    'deadname': { weight: 35, type: 'negative' },
+    'misgender': { weight: 35, type: 'negative' },
+    'terf': { weight: 35, type: 'negative' },
+    'transphobic': { weight: 35, type: 'negative' },
+    'transphobia': { weight: 35, type: 'negative' },
+    'lgbtq': { weight: 25, type: 'positive' },
+    'queer': { weight: 25, type: 'positive' },
+    'drag': { weight: 30, type: 'neutral' },
+    'drag queen': { weight: 35, type: 'neutral' },
+    'immigration': { weight: 20, type: 'neutral' },
+    'immigrant': { weight: 20, type: 'positive' },
+    'undocumented': { weight: 30, type: 'positive' },
+    'illegal alien': { weight: 35, type: 'negative' },
+    'border': { weight: 20, type: 'neutral' },
+    'wall': { weight: 25, type: 'negative' },
+    'sanctuary city': { weight: 30, type: 'positive' },
+    'asylum': { weight: 25, type: 'positive' },
+    'refugee': { weight: 25, type: 'positive' },
+    'dreamers': { weight: 30, type: 'positive' },
+    'daca': { weight: 30, type: 'positive' },
+    'climate change': { weight: 25, type: 'neutral' },
+    'global warming': { weight: 25, type: 'neutral' },
+    'climate crisis': { weight: 35, type: 'negative' },
+    'green new deal': { weight: 35, type: 'positive' },
+    'socialism': { weight: 30, type: 'positive' },
+    'capitalism': { weight: 25, type: 'negative' },
+    'healthcare': { weight: 20, type: 'positive' },
+    'medicare for all': { weight: 35, type: 'positive' },
+    'gun control': { weight: 30, type: 'positive' },
+    'second amendment': { weight: 30, type: 'negative' },
+    'trump': { weight: 30, type: 'negative' },
+    'maga': { weight: 35, type: 'negative' },
+    'biden': { weight: 25, type: 'positive' },
+    'inuit': { weight: 35, type: 'positive' },
+    'metis': { weight: 35, type: 'positive' },
+    'native american': { weight: 35, type: 'positive' },
+    'redskin': { weight: 45, type: 'negative' },
+    'trail of tears': { weight: 45, type: 'negative' },
+    'andrew jackson': { weight: 40, type: 'negative' },
+    'harriet tubman': { weight: 40, type: 'positive' },
+    'black power': { weight: 45, type: 'positive' },
+    'black panther': { weight: 45, type: 'positive' },
+    'angela davis': { weight: 45, type: 'positive' },
+    'me too': { weight: 50, type: 'positive' },
+    'believe women': { weight: 50, type: 'positive' },
+    'patriarchy': { weight: 35, type: 'negative' },
+    'toxic masculinity': { weight: 40, type: 'negative' },
+    'cancel culture': { weight: 40, type: 'neutral' },
+    'woke': { weight: 40, type: 'neutral' },
+    'men': { weight: 25, type: 'neutral' },
+    'all men': { weight: 45, type: 'positive' },
+    'women': { weight: 30, type: 'positive' }
+};
+
+const wokeWords = [
+    'equity', 'inclusive', 'diversity', 'systemic racism', 'white privilege',
+    'toxic masculinity', 'patriarchy', 'intersectionality', 'social justice',
+    'marginalized', 'underrepresented', 'ally', 'pronouns', 'gender identity',
+    'transphobia', 'homophobia', 'racism', 'oppression', 'microaggression',
+    'cultural appropriation', 'safe space', 'trigger warning', 'ableism',
+    'cisgender', 'heteronormative', 'decolonize', 'bipoc', 'lgbtq',
+    'non-binary', 'they them', 'latinx', 'womxn', 'folx', 'pregnant people',
+    'birthing person', 'chestfeeding', 'menstruators', 'climate justice',
+    'body positivity', 'fatphobia', 'neurodivergent', 'neurodiversity',
+    'lived experience', 'speak my truth', 'my truth', 'problematic',
+    'normalize', 'validate', 'emotional labor', 'unconscious bias',
+    'implicit bias', 'privilege', 'check your privilege', 'positionality',
+    'gender affirming', 'assigned at birth', 'deadname', 'preferred pronouns',
+    'neo pronouns', 'gender fluid', 'genderqueer', 'two-spirit', 'lgbtqia+',
+    'queer', 'anti-racist', 'anti-racism', 'defund the police', 'acab',
+    'land back', 'reparations', 'cut the check', 'woke', 'cancel culture',
+    'call out', 'hold accountable', 'harm', 'literal violence', 'trauma informed',
+    'all men', 'men are trash', 'male tears', 'mansplaining', 'mansplain',
+    'manbaby', 'manbabies', 'fragile masculinity', 'toxic male', 'masculinity so fragile',
+    'men are bad', 'men are evil', 'men are the problem', 'men are trash',
+    'kill all men', 'kAM', 'male violence', 'male aggression', 'male entitlement',
+    'male privilege', 'male dominated', 'patriarchal', 'misogynist', 'misogyny',
+    'sexist', 'sexism', 'gendered', 'male gaze', 'toxic male behavior'
+];
+
+const antiWokeWords = [
+    'illegal alien', 'anchor baby', 'welfare queen', 'radical left',
+    'cultural marxism', 'traditional values', 'family values', 'western civilization',
+    'meritocracy', 'personal responsibility', 'law and order', 'tough on crime',
+    'build the wall', 'america first', 'pro life', 'abortion is murder',
+    'baby killer', 'groomer', 'grooming', 'protect the children',
+    'parental rights', 'school choice', 'critical race theory', 'crt',
+    'fake news', 'deep state', 'swamp', 'drain the swamp', 'big government',
+    'nanny state', 'socialism', 'communism', 'marxism', 'fascist',
+    'climate hoax', 'scam', 'fraud', 'stolen election', 'rigged',
+    'stop the steal', 'woke mob', 'cancel culture', 'virtue signaling',
+    'social justice warrior', 'sjw', 'snowflake', 'triggered',
+    'anti white', 'reverse racism', 'all lives matter', 'blue lives matter',
+    'back the blue', 'thin blue line', 'support police', 'fund police',
+    'abortion should be illegal', 'illegal abortion', 'pro-life', 'sanctity of life',
+    'unborn child', 'unborn baby', 'right to life', 'choose life', 'not all men'
+];
+
+// TRUE NEGATIONS ONLY
+const negationWords = ['not','never','no','dont','don\'t','doesnt','doesn\'t','isnt','isn\'t','arent','aren\'t','wasnt','wasn\'t','werent','weren\'t','wont','won\'t','wouldnt','wouldn\'t','shouldnt','shouldn\'t','couldnt','couldn\'t','cant','can\'t','cannot','without','lack','absence','remove','stop','end','destroy','fight','oppose','resist','reject','deny','refuse'];
+
+const supportWords = ['love','support','believe','stand with','ally','defend','protect','advocate','promote','embrace','celebrate','honor','respect','validate','affirm','uplift','center','amplify','recognize','acknowledge','understand','listen','learn','grow','evolve','progress','forward','justice for','rights for','freedom for','liberation for','equality for','equity for','good','great','excellent','amazing','wonderful','fantastic','beautiful','important','essential','necessary','vital','crucial','critical','urgent'];
+
+const referenceCorpus = {
+    woke: [
+        "Equity and inclusion are essential for social justice. We must dismantle systemic racism and white privilege. Intersectional feminism recognizes how race, gender, and class oppression intersect. Trans rights are human rights. Black Lives Matter. Decolonize your mind. Check your privilege.",
+        "Climate justice requires recognizing environmental racism. Indigenous land rights must be respected. Reparations are necessary. The patriarchy must be smashed. Toxic masculinity harms everyone. Non-binary identities are valid. Use preferred pronouns. Abolish the police.",
+        "Diversity equity and inclusion initiatives are crucial. Microaggressions cause harm. Safe spaces are necessary for marginalized communities. Allyship means active solidarity. Defund ICE. No human is illegal. Support undocumented immigrants. Protect trans youth.",
+        "We need to center marginalized voices. Amplify black voices. Listen to women of color. Believe survivors. Me too. Times up. End rape culture. Stop victim blaming. Support abortion access. Reproductive justice for all. Birth justice matters.",
+        "Cultural appropriation is harmful. Respect indigenous cultures. Land back to native peoples. Decolonize the curriculum. Teach the truth about history. Critical race theory should be taught in schools. Ethnic studies are essential education.",
+        "Healthcare is a human right. Medicare for all. Universal basic income. Housing is a human right. Food security for all. End poverty. Economic justice now. Workers deserve living wages. Union strong. Support labor rights. Fight for fifteen.",
+        "Climate change is an existential threat. Green new deal now. Renewable energy transition. Just transition for fossil fuel workers. Environmental justice for frontline communities. Stop line three. No more pipelines. Protect sacred water.",
+        "Prison abolition now. Transformative justice. Community accountability. Restorative practices. Defund the police. Invest in communities. Mental health crisis response not police. Housing not handcuffs. Care not cops. Counselors not cops."
+    ],
+    antiWoke: [
+        "Meritocracy and personal responsibility built this nation. Traditional family values are under attack. Critical race theory divides Americans. Biological sex is immutable. There are only two genders. Men cannot become women. Women cannot become women.",
+        "America first policies protect our sovereignty. Build the wall. Law and order must be maintained. Support police. Blue lives matter. All lives matter. Reverse racism is real. White privilege is a myth. Western civilization is superior.",
+        "Cancel culture destroys free speech. Virtue signaling is narcissistic. Social justice warriors are authoritarian. Gender ideology is dangerous. Protect children from groomers. Parental rights are absolute. School choice now. Stop indoctrination.",
+        "Personal responsibility not government handouts. Welfare creates dependency. Taxation is theft. Small government is best. Free market capitalism. Deregulation creates prosperity. Right to work laws. Union busting saves jobs.",
+        "Illegal aliens must be deported. Anchor babies should not get citizenship. English only. Assimilate or leave. America for Americans. National sovereignty matters. Close the borders. Extreme vetting. Muslim ban. Travel ban.",
+        "Pro life always. Abortion is murder. Sanctity of life. Protect the unborn. Adoption not abortion. Defund planned parenthood. Crisis pregnancy centers. Post roe america. States rights on abortion. Fetal heartbeat.",
+        "Second amendment rights. Shall not be infringed. Good guy with a gun. Gun free zones are dangerous. Constitutional carry nationwide. Stand your ground. Castle doctrine. Armed teachers. School resource officers.",
+        "Fake news media. Enemy of the people. Lamestream media. Liberal media bias. Big tech censorship. Silencing conservatives. Shadow banning. Twitter files. Hunter biden laptop. Election fraud. Rigged election. Stop the steal."
+    ],
+    neutral: [
+        "The weather today is sunny with a chance of rain. The stock market closed higher. Sports teams played games. New restaurant opened downtown. Traffic was heavy on the highway. Construction begins next week.",
+        "Coffee tastes good in the morning. Dogs are popular pets. Pizza is a favorite food. People enjoy watching movies. Exercise is healthy. Reading books is educational. Music brings joy. Art is beautiful.",
+        "Technology advances rapidly. New phone released. App update available. Software bug fixed. Website redesigned. Server maintenance scheduled. Database upgraded. Security patch applied. User interface improved.",
+        "Travel restrictions lifted. Flight delays reported. Hotel bookings increased. Tourism recovering. New airline route. Airport expansion planned. Train service restored. Bus schedule changed. Road repairs completed."
+    ]
+};
+
+// TF-IDF + COSINE SIMILARITY
+class SimpleCorpus {
+    constructor() {
+        this.documents = {};
+        this.docCount = 0;
+    }
+    
+    tokenize(text) {
+        return text.toLowerCase()
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 2);
+    }
+    
+    addDoc(id, text) {
+        this.documents[id] = this.tokenize(text);
+        this.docCount++;
+    }
+    
+    getTF(docId, term) {
+        const tokens = this.documents[docId];
+        const count = tokens.filter(t => t === term).length;
+        return count / tokens.length;
+    }
+    
+    getIDF(term) {
+        const docsWithTerm = Object.values(this.documents)
+            .filter(tokens => tokens.includes(term)).length;
+        return Math.log(this.docCount / (docsWithTerm || 1));
+    }
+    
+    getVector(docId) {
+        const tokens = this.documents[docId];
+        const uniqueTerms = [...new Set(tokens)];
+        const vector = {};
+        
+        uniqueTerms.forEach(term => {
+            vector[term] = this.getTF(docId, term) * this.getIDF(term);
+        });
+        
+        return vector;
+    }
+    
+    similarity(doc1, doc2) {
+        const vec1 = this.getVector(doc1);
+        const vec2 = this.getVector(doc2);
+        
+        const terms = new Set([...Object.keys(vec1), ...Object.keys(vec2)]);
+        
+        let dotProduct = 0;
+        let mag1 = 0;
+        let mag2 = 0;
+        
+        terms.forEach(term => {
+            const v1 = vec1[term] || 0;
+            const v2 = vec2[term] || 0;
+            
+            dotProduct += v1 * v2;
+            mag1 += v1 * v1;
+            mag2 += v2 * v2;
+        });
+        
+        mag1 = Math.sqrt(mag1);
+        mag2 = Math.sqrt(mag2);
+        
+        if (mag1 === 0 || mag2 === 0) return 0;
+        return dotProduct / (mag1 * mag2);
+    }
+}
+
+// WIKIPEDIA API
+async function checkWikipedia(entity) {
+    try {
+        const response = await fetch(
+            `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(entity)}&prop=categories&origin=*&format=json&cllimit=50`
+        );
+        const data = await response.json();
+        
+        const pages = data.query.pages;
+        const pageId = Object.keys(pages)[0];
+        const categories = pages[pageId].categories || [];
+        
+        const categoryText = categories.map(c => c.title.toLowerCase()).join(' ');
+        
+        const wokeIndicators = ['feminism', 'lgbt', 'social justice', 'civil rights', 'progressive', 'liberal', 'left-wing', 'activism', 'anti-racism', 'environmentalism', 'climate'];
+        const antiWokeIndicators = ['conservatism', 'right-wing', 'traditional', 'republican', 'libertarian', 'opposition', 'criticism'];
+        
+        let score = 50;
+        let matched = [];
+        
+        wokeIndicators.forEach(ind => {
+            if (categoryText.includes(ind)) {
+                score += 15;
+                matched.push(ind);
+            }
+        });
+        
+        antiWokeIndicators.forEach(ind => {
+            if (categoryText.includes(ind)) {
+                score -= 15;
+                matched.push('anti-' + ind);
+            }
+        });
+        
+        return {
+            score: Math.max(0, Math.min(100, score)),
+            found: true,
+            categories: categories.slice(0, 5).map(c => c.title.replace('Category:', '')),
+            matched: matched
+        };
+        
+    } catch (e) {
+        return { score: 50, found: false, error: e.message };
+    }
+}
+
+function extractEntities(text) {
+    const words = text.split(/\s+/);
+    const entities = [];
+    
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i].replace(/[^a-zA-Z]/g, '');
+        if (word.length > 3 && word[0] === word[0].toUpperCase()) {
+            entities.push(word);
+        }
+    }
+    
+    const politicalTerms = ['feminism', 'socialism', 'communism', 'marxism', 'capitalism', 'democracy', 'republican', 'democrat', 'liberal', 'conservative', 'progressive', 'abortion', 'immigration', 'climate', 'police', 'prison', 'healthcare'];
+    
+    politicalTerms.forEach(term => {
+        if (text.toLowerCase().includes(term)) {
+            entities.push(term);
+        }
+    });
+    
+    return [...new Set(entities)].slice(0, 3);
+}
+
+function amplifyScore(score) {
+    const distanceFromCenter = score - 50;
+    const amplified = 50 + (distanceFromCenter * AMPLIFICATION);
+    return Math.max(0, Math.min(100, amplified));
+}
+
+// STRIPE CHECKOUT FUNCTION
+function goToStripeCheckout() {
+    // Open Stripe Payment Link in new tab
+    window.open(STRIPE_PAYMENT_LINK, '_blank');
+    
+    // Show message while they're checking out
+    showToast('Opening secure checkout...');
+    
+    // Optional: Check if they return and paid (simple polling)
+    // In production, you'd use webhooks instead
+    setTimeout(() => {
+        // For demo: allow manual activation after "payment"
+        if (confirm('Did you complete payment? Click OK to activate Pro.')) {
+            activatePro();
+        }
+    }, 30000); // 30 seconds later
+}
+
+// Activate Pro after successful payment
+function activatePro() {
+    isPro = true;
+    localStorage.setItem('wokedar_pro_purchased', 'true');
+    updateUI();
+    showToast('✅ Pro activated! Thank you for your purchase!');
+}
+
+// CUSTOM PHRASE MANAGEMENT - now only for woke phrases
+function addCustomPhrase() {
+    const phraseInput = document.getElementById('customPhraseInput');
+    const text = phraseInput.value.trim().toLowerCase();
+    
+    if (!text) {
+        showToast('Please enter a phrase');
+        return;
+    }
+    
+    // Always positive score for woke phrases
+    const score = selectedStrength;
+    
+    const existingIndex = customPhrases.findIndex(p => p.text === text);
+    if (existingIndex >= 0) {
+        customPhrases[existingIndex] = { text, score };
+        showToast('Updated: ' + text);
+    } else {
+        customPhrases.push({ text, score });
+        showToast(`Added "${text}" (+${score})`);
+    }
+    
+    localStorage.setItem('wokedar_custom_phrases', JSON.stringify(customPhrases));
+    
+    phraseInput.value = '';
+    updateCustomPhraseList();
+}
+
+function deleteCustomPhrase(index) {
+    customPhrases.splice(index, 1);
+    localStorage.setItem('wokedar_custom_phrases', JSON.stringify(customPhrases));
+    updateCustomPhraseList();
+    showToast('Phrase deleted');
+}
+
+function selectStrength(strength) {
+    selectedStrength = strength;
+    
+    ['btnMild', 'btnStrong', 'btnExtreme'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.style.borderColor = 'rgba(255,255,255,0.2)';
+        btn.style.background = 'transparent';
+        btn.style.color = '#888';
+        btn.style.borderWidth = '1px';
+    });
+    
+    const selectedBtn = strength === 30 ? document.getElementById('btnMild') : 
+                       strength === 50 ? document.getElementById('btnStrong') : 
+                       document.getElementById('btnExtreme');
+    
+    selectedBtn.style.borderColor = '#00d4ff';
+    selectedBtn.style.borderWidth = '2px';
+    selectedBtn.style.background = 'rgba(0,212,255,0.2)';
+    selectedBtn.style.color = '#fff';
+}
+
+function updateCustomPhraseList() {
+    const listEl = document.getElementById('customPhraseList');
+    const countEl = document.getElementById('phraseCount');
+    
+    countEl.textContent = `${customPhrases.length} custom phrase${customPhrases.length !== 1 ? 's' : ''}`;
+    
+    if (customPhrases.length === 0) {
+        listEl.innerHTML = '<div class="empty-phrases">No custom phrases yet. Add some above!</div>';
+        return;
+    }
+    
+    listEl.innerHTML = customPhrases.map((phrase, index) => `
+        <div class="custom-phrase-item">
+            <span class="phrase-text">"${phrase.text}"</span>
+            <span class="phrase-score">+${phrase.score}</span>
+            <button class="delete-btn" onclick="deleteCustomPhrase(${index})">Delete</button>
+        </div>
+    `).join('');
+}
+
+// RENDER CUSTOM PHRASES SECTION BASED ON PRO STATUS
+function renderCustomPhrasesSection() {
+    const container = document.getElementById('customPhrasesContainer');
+    
+    if (isPro) {
+        // Show simplified custom phrases UI for Pro users - only woke phrases
+        container.innerHTML = `
+            <div class="custom-phrases-section">
+                <h4>📝 Custom Woke Phrases</h4>
+                <p>Add new woke terms as language evolves. These are saved locally and take priority over built-in phrases.</p>
+                
+                <!-- Enter phrase -->
+                <input type="text" id="customPhraseInput" placeholder="Enter woke phrase (e.g., new social justice term)" style="width: 100%; margin-bottom: 15px;" />
+                
+                <!-- Choose strength -->
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Woke-ness strength:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" id="btnMild" class="strength-btn" onclick="selectStrength(30)" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #888;">
+                            Mild<br><small>+30</small>
+                        </button>
+                        <button type="button" id="btnStrong" class="strength-btn" onclick="selectStrength(50)" style="flex: 1; padding: 10px; border-radius: 6px; border: 2px solid #00d4ff; background: rgba(0,212,255,0.2); color: #fff;">
+                            Strong<br><small>+50</small>
+                        </button>
+                        <button type="button" id="btnExtreme" class="strength-btn" onclick="selectStrength(80)" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #888;">
+                            Extreme<br><small>+80</small>
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="addCustomPhrase()" style="width: 100%;">Add Woke Phrase</button>
+                
+                <div class="custom-phrase-list" id="customPhraseList">
+                    <div class="empty-phrases">No custom phrases yet. Add some above!</div>
+                </div>
+                <div class="phrase-count" id="phraseCount">0 custom phrases</div>
+            </div>
+        `;
+        
+        // Initialize button states
+        setTimeout(() => {
+            selectStrength(50);
+            updateCustomPhraseList();
+        }, 0);
+    } else {
+        // Show locked version for free users
+        container.innerHTML = `
+            <div class="custom-phrases-locked">
+                <div class="lock-icon">🔒</div>
+                <h4>📝 Custom Woke Phrases</h4>
+                <p>Add your own woke terms to stay ahead as language evolves. Perfect for detecting new social justice terminology.</p>
+                <button class="btn btn-primary" onclick="goToStripeCheckout()" style="width: 100%; margin-top: 10px;">
+                    Unlock with Pro — $4.99
+                </button>
+            </div>
+        `;
+    }
+}
+
+// FIXED: Phrase Priority System with custom phrases
+function contextAwareKeywordAnalysis(text) {
+    let keywordScore = 50;
+    let matchedWoke = [];
+    let matchedAnti = [];
+    let contextSwitches = 0;
+    let priorityMatches = [];
+    
+    let lowerText = text.toLowerCase();
+    
+    // Get combined phrases (base + custom)
+    const priorityPhrases = getPriorityPhrases();
+    
+    // STEP 1: CHECK PRIORITY PHRASES FIRST
+    for (const [phrase, config] of Object.entries(priorityPhrases)) {
+        if (lowerText.includes(phrase)) {
+            keywordScore += config.score;
+            const source = config.isCustom ? ' (custom)' : '';
+            priorityMatches.push(phrase + ` (${config.score > 0 ? '+' : ''}${config.score}${source})`);
+            
+            if (config.score > 0) {
+                matchedWoke.push(phrase + ' (priority' + source + ')');
+            } else {
+                matchedAnti.push(phrase + ' (priority' + source + ')');
+            }
+            
+            // Remove the matched phrase so it's not double-counted
+            lowerText = lowerText.replaceAll(phrase, ' ');
+        }
+    }
+    
+    // STEP 2: Check always-woke words
+    alwaysWoke.forEach(word => {
+        if (lowerText.includes(word)) {
+            keywordScore += 40;
+            matchedWoke.push(word + ' (always-woke)');
+            lowerText = lowerText.replaceAll(word, ' ');
+        }
+    });
+    
+    // STEP 3: Check always-anti-woke words
+    alwaysAntiWoke.forEach(word => {
+        if (lowerText.includes(word)) {
+            keywordScore -= 40;
+            matchedAnti.push(word + ' (always-anti)');
+            lowerText = lowerText.replaceAll(word, ' ');
+        }
+    });
+    
+    // STEP 4: Context-dependent topics
+    Object.entries(contextDependentTopics).forEach(([topic, config]) => {
+        const topicRegex = new RegExp(`\\b${topic}\\b`, 'gi');
+        const matches = lowerText.match(topicRegex);
+        
+        if (matches) {
+            matches.forEach(() => {
+                const topicIndex = lowerText.indexOf(topic);
+                const beforeText = lowerText.slice(0, topicIndex);
+                const afterText = lowerText.slice(topicIndex + topic.length);
+                
+                const beforeWords = beforeText.split(/\s+/).slice(-5);
+                const afterWords = afterText.split(/\s+/).slice(0, 5);
+                const contextWords = [...beforeWords, ...afterWords];
+                
+                const hasSupport = supportIndicators.some(ind => 
+                    contextWords.some(w => w.includes(ind))
+                );
+                
+                const hasOppose = opposeIndicators.some(ind => 
+                    contextWords.some(w => w.includes(ind))
+                );
+                
+                let modifier = 0;
+                
+                if (config.type === 'negative') {
+                    if (hasOppose && !hasSupport) {
+                        modifier = config.weight;
+                        matchedWoke.push(topic + ' (opposed ✓)');
+                    } else if (hasSupport && !hasOppose) {
+                        modifier = -config.weight;
+                        matchedAnti.push(topic + ' (supported ✗)');
+                    } else if (hasSupport && hasOppose) {
+                        modifier = config.weight * 0.5;
+                        contextSwitches++;
+                        matchedWoke.push(topic + ' (mixed)');
+                    } else {
+                        modifier = config.weight * 0.3;
+                        matchedWoke.push(topic + ' (weak)');
+                    }
+                } else if (config.type === 'positive') {
+                    if (hasSupport && !hasOppose) {
+                        modifier = config.weight;
+                        matchedWoke.push(topic + ' (supported ✓)');
+                    } else if (hasOppose && !hasSupport) {
+                        modifier = -config.weight;
+                        matchedAnti.push(topic + ' (opposed ✗)');
+                    } else if (hasSupport && hasOppose) {
+                        modifier = config.weight * 0.5;
+                        contextSwitches++;
+                        matchedWoke.push(topic + ' (mixed)');
+                    } else {
+                        modifier = config.weight * 0.3;
+                        matchedWoke.push(topic + ' (weak)');
+                    }
+                } else {
+                    if (hasSupport && !hasOppose) {
+                        modifier = config.weight;
+                        matchedWoke.push(topic);
+                    } else if (hasOppose && !hasSupport) {
+                        modifier = -config.weight;
+                        matchedAnti.push(topic);
+                    } else if (hasSupport && hasOppose) {
+                        modifier = config.weight * 0.5;
+                        contextSwitches++;
+                        matchedWoke.push(topic + ' (mixed)');
+                    } else {
+                        modifier = config.weight * 0.3;
+                        matchedWoke.push(topic + ' (weak)');
+                    }
+                }
+                
+                keywordScore += modifier;
+            });
+        }
+    });
+    
+    // STEP 5: Individual woke words
+    for (let word of wokeWords) {
+        if (lowerText.includes(word.toLowerCase())) {
+            let modifier = 15;
+            
+            const index = lowerText.indexOf(word.toLowerCase());
+            const context = lowerText.substring(Math.max(0, index - 40), Math.min(lowerText.length, index + word.length + 40));
+            
+            for (let neg of negationWords) {
+                if (context.includes(neg)) {
+                    modifier = -20;
+                    break;
+                }
+            }
+            
+            if (modifier > 0) {
+                for (let sup of supportWords) {
+                    if (context.includes(sup)) {
+                        modifier += 5;
+                        break;
+                    }
+                }
+                matchedWoke.push(word);
+            } else {
+                matchedAnti.push(word + ' (rejected)');
+            }
+            
+            keywordScore += modifier;
+        }
+    }
+    
+    // STEP 6: Individual anti-woke words
+    for (let word of antiWokeWords) {
+        if (lowerText.includes(word.toLowerCase())) {
+            keywordScore -= 15;
+            matchedAnti.push(word);
+        }
+    }
+    
+    return {
+        score: Math.max(0, Math.min(100, keywordScore)),
+        matchedWoke,
+        matchedAnti,
+        contextSwitches,
+        priorityMatches
+    };
+}
+
+// URL FETCHING
+async function fetchUrlContent(url) {
+    const statusEl = document.getElementById('fetchStatus');
+    const previewEl = document.getElementById('sourcePreview');
+    
+    statusEl.className = 'fetch-status loading';
+    statusEl.textContent = '🌐 Fetching article...';
+    statusEl.style.display = 'block';
+    previewEl.style.display = 'none';
+    
+    try {
+        const proxies = [
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+            `https://corsproxy.io/?${encodeURIComponent(url)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+        ];
+        
+        let response = null;
+        
+        for (const proxyUrl of proxies) {
+            try {
+                response = await fetch(proxyUrl, { timeout: 10000 });
+                if (response.ok) break;
+            } catch (e) {
+                continue;
+            }
+        }
+        
+        if (!response || !response.ok) {
+            throw new Error('Could not fetch URL through proxies');
+        }
+        
+        const html = await response.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        doc.querySelectorAll('script, style, nav, header, footer, aside').forEach(el => el.remove());
+        
+        const article = doc.querySelector('article') || 
+                       doc.querySelector('main') || 
+                       doc.querySelector('[role="main"]') ||
+                       doc.querySelector('.content') ||
+                       doc.body;
+        
+        let text = article.innerText || article.textContent || '';
+        
+        text = text
+            .replace(/\s+/g, ' ')
+            .replace(/\n+/g, '\n')
+            .trim()
+            .substring(0, 5000);
+        
+        if (text.length < 100) {
+            throw new Error('Could not extract meaningful content from this URL');
+        }
+        
+        fetchedUrlContent = text;
+        currentUrl = url;
+        
+        statusEl.className = 'fetch-status success';
+        statusEl.textContent = `✅ Fetched ${text.length} characters`;
+        
+        const title = doc.querySelector('title')?.textContent || 'Untitled';
+        previewEl.innerHTML = `<strong>${title}</strong><br><br>${text.substring(0, 200)}...`;
+        previewEl.style.display = 'block';
+        
+        return text;
+        
+    } catch (error) {
+        statusEl.className = 'fetch-status error';
+        statusEl.textContent = '❌ Error: ' + error.message;
+        fetchedUrlContent = '';
+        currentUrl = '';
+        return null;
+    }
+}
+
+function setInputMode(mode) {
+    currentInputMode = mode;
+    
+    document.querySelectorAll('.input-mode').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById('textInputGroup').style.display = mode === 'text' ? 'block' : 'none';
+    document.getElementById('urlInputGroup').style.display = mode === 'url' ? 'block' : 'none';
+    
+    if (mode === 'text') {
+        document.getElementById('fetchStatus').style.display = 'none';
+        document.getElementById('sourcePreview').style.display = 'none';
+    }
+}
+
+async function analyzeContent() {
+    let textToAnalyze = '';
+    let source = 'text';
+    
+    if (currentInputMode === 'text') {
+        textToAnalyze = document.getElementById('textInput').value.trim();
+        source = 'text';
+    } else {
+        const url = document.getElementById('urlInput').value.trim();
+        if (!url) {
+            showToast('Please enter a URL');
+            return;
+        }
+        
+        if (!fetchedUrlContent) {
+            textToAnalyze = await fetchUrlContent(url);
+            if (!textToAnalyze) return;
+            source = 'url';
+        } else {
+            textToAnalyze = fetchedUrlContent;
+            source = 'url';
+        }
+    }
+    
+    if (!textToAnalyze) {
+        showToast('Please enter text or a valid URL');
+        return;
+    }
+    
+    await performAnalysis(textToAnalyze, source);
+}
+
+async function performAnalysis(text, source) {
+    if (!isPro && freeScansUsed >= 3) {
+        showToast('Free limit reached. Upgrade to Pro!');
+        document.getElementById('upgradeBanner').classList.add('visible');
+        return;
+    }
+    
+    const keywordResult = contextAwareKeywordAnalysis(text);
+    
+    const corpus = new SimpleCorpus();
+    referenceCorpus.woke.forEach((doc, i) => corpus.addDoc(`woke_${i}`, doc));
+    referenceCorpus.antiWoke.forEach((doc, i) => corpus.addDoc(`anti_${i}`, doc));
+    referenceCorpus.neutral.forEach((doc, i) => corpus.addDoc(`neutral_${i}`, doc));
+    corpus.addDoc('query', text);
+    
+    let wokeSim = 0;
+    let antiSim = 0;
+    for (let i = 0; i < referenceCorpus.woke.length; i++) {
+        const sim = corpus.similarity('query', `woke_${i}`);
+        wokeSim = Math.max(wokeSim, sim);
+    }
+    for (let i = 0; i < referenceCorpus.antiWoke.length; i++) {
+        const sim = corpus.similarity('query', `anti_${i}`);
+        antiSim = Math.max(antiSim, sim);
+    }
+    const corpusScore = 50 + (wokeSim - antiSim) * 50;
+    
+    const entities = extractEntities(text);
+    let wikiScore = 50;
+    let wikiFound = false;
+    let wikiDetails = null;
+    if (entities.length > 0) {
+        wikiDetails = await checkWikipedia(entities[0]);
+        if (wikiDetails.found) {
+            wikiScore = wikiDetails.score;
+            wikiFound = true;
+        }
+    }
+    
+    const rawCombinedScore = (keywordResult.score * 0.4) + (corpusScore * 0.4) + (wikiScore * 0.2);
+    const finalScore = amplifyScore(rawCombinedScore);
+    
+    updateResults(finalScore, rawCombinedScore, {
+        keyword: { score: keywordResult.score, matchedWoke: keywordResult.matchedWoke, matchedAnti: keywordResult.matchedAnti, contextSwitches: keywordResult.contextSwitches, priorityMatches: keywordResult.priorityMatches },
+        corpus: { score: corpusScore, wokeSim, antiSim },
+        wiki: { score: wikiScore, found: wikiFound, entity: entities[0] }
+    }, source);
+    
+    saveToHistory(text, finalScore, source);
+    
+    if (!isPro) {
+        freeScansUsed++;
+        updateUI();
+    }
+}
+
+// SCAN HISTORY
+let scanHistory = JSON.parse(localStorage.getItem('wokedar_history') || '[]');
+
+function saveToHistory(text, score, source) {
+    const entry = {
+        text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+        fullText: text,
+        score: score,
+        source: source,
+        url: source === 'url' ? currentUrl : null,
+        date: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    scanHistory.unshift(entry);
+    if (scanHistory.length > 50) scanHistory = scanHistory.slice(0, 50);
+    localStorage.setItem('wokedar_history', JSON.stringify(scanHistory));
+    updateHistoryDisplay();
+    updateTrendsDisplay();
+}
+
+function updateHistoryDisplay() {
+    const historyList = document.getElementById('historyList');
+    if (scanHistory.length === 0) {
+        historyList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">No scans yet. Start analyzing!</div>
+            </div>
+        `;
+        return;
+    }
+    
+    historyList.innerHTML = scanHistory.map((item, index) => `
+        <div class="history-item" onclick="loadHistoryItem(${index})">
+            <div class="history-text">${item.text}</div>
+            <div class="history-meta">
+                <span class="history-score" style="color: ${item.score < 30 ? COLORS.safe : item.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(item.score)}%</span>
+                ${item.source === 'url' ? '<span class="history-source">🌐 URL</span>' : ''}
+                <span class="history-date">${item.date}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadHistoryItem(index) {
+    const item = scanHistory[index];
+    if (item.source === 'url' && item.url) {
+        setInputMode('url');
+        document.getElementById('urlInput').value = item.url;
+        fetchedUrlContent = item.fullText;
+        currentUrl = item.url;
+    } else {
+        setInputMode('text');
+        document.getElementById('textInput').value = item.fullText;
+    }
+    switchTab('scan');
+    showToast('Loaded from history');
+}
+
+function updateTrendsDisplay() {
+    const totalScans = document.getElementById('totalScans');
+    const avgScore = document.getElementById('avgScore');
+    const highestScore = document.getElementById('highestScore');
+    const trendChart = document.getElementById('trendChart');
+    
+    if (scanHistory.length === 0) {
+        totalScans.textContent = '0';
+        avgScore.textContent = '--';
+        highestScore.textContent = '--';
+        trendChart.innerHTML = `
+            <div class="empty-state" style="flex: 1;">
+                <div class="empty-state-text">No data yet</div>
+            </div>
+        `;
+        return;
+    }
+    
+    totalScans.textContent = scanHistory.length;
+    const avg = scanHistory.reduce((sum, item) => sum + item.score, 0) / scanHistory.length;
+    avgScore.textContent = Math.round(avg) + '%';
+    const highest = Math.max(...scanHistory.map(item => item.score));
+    highestScore.textContent = Math.round(highest) + '%';
+    
+    const recentScans = scanHistory.slice(0, 10).reverse();
+    const maxScore = Math.max(...recentScans.map(s => s.score), 100);
+    
+    trendChart.innerHTML = recentScans.map((scan, i) => {
+        const height = (scan.score / maxScore) * 100;
+        const color = scan.score < 30 ? COLORS.safe : scan.score > 70 ? COLORS.critical : COLORS.moderate;
+        return `<div class="trend-bar" style="height: ${height}%; background: ${color}" data-score="${Math.round(scan.score)}%"></div>`;
+    }).join('');
+}
+
+// COMPARE FUNCTIONALITY
+async function compareTexts() {
+    const text1 = document.getElementById('compareInput1').value.trim();
+    const text2 = document.getElementById('compareInput2').value.trim();
+    
+    if (!text1 || !text2) {
+        showToast('Please enter both texts to compare');
+        return;
+    }
+    
+    const result1 = await analyzeTextForComparison(text1);
+    const result2 = await analyzeTextForComparison(text2);
+    
+    document.getElementById('compareResults').style.display = 'block';
+    
+    const score1 = Math.round(result1.finalScore);
+    const score2 = Math.round(result2.finalScore);
+    
+    document.getElementById('compareScore1').textContent = score1 + '%';
+    document.getElementById('compareScore1').style.color = score1 < 30 ? COLORS.safe : score1 > 70 ? COLORS.critical : COLORS.moderate;
+    document.getElementById('compareLabel1').textContent = score1 < 30 ? 'Not Woke' : score1 > 70 ? 'Very Woke' : 'Moderate';
+    document.getElementById('compareLabel1').style.color = score1 < 30 ? COLORS.safe : score1 > 70 ? COLORS.critical : COLORS.moderate;
+    
+    document.getElementById('compareScore2').textContent = score2 + '%';
+    document.getElementById('compareScore2').style.color = score2 < 30 ? COLORS.safe : score2 > 70 ? COLORS.critical : COLORS.moderate;
+    document.getElementById('compareLabel2').textContent = score2 < 30 ? 'Not Woke' : score2 > 70 ? 'Very Woke' : 'Moderate';
+    document.getElementById('compareLabel2').style.color = score2 < 30 ? COLORS.safe : score2 > 70 ? COLORS.critical : COLORS.moderate;
+    
+    const result1El = document.getElementById('compareResult1');
+    const result2El = document.getElementById('compareResult2');
+    result1El.classList.remove('compare-winner');
+    result2El.classList.remove('compare-winner');
+    
+    const winnerEl = document.getElementById('compareWinner');
+    if (score1 > score2) {
+        result1El.classList.add('compare-winner');
+        winnerEl.innerHTML = `<span style="color: ${COLORS.critical}">Text 1 is more woke (+${Math.round(score1 - score2)}%)</span>`;
+    } else if (score2 > score1) {
+        result2El.classList.add('compare-winner');
+        winnerEl.innerHTML = `<span style="color: ${COLORS.critical}">Text 2 is more woke (+${Math.round(score2 - score1)}%)</span>`;
+    } else {
+        winnerEl.innerHTML = '<span style="color: ' + COLORS.moderate + '">Equal scores</span>';
+    }
+}
+
+async function analyzeTextForComparison(text) {
+    const keywordResult = contextAwareKeywordAnalysis(text);
+    
+    const corpus = new SimpleCorpus();
+    referenceCorpus.woke.forEach((doc, i) => corpus.addDoc(`woke_${i}`, doc));
+    referenceCorpus.antiWoke.forEach((doc, i) => corpus.addDoc(`anti_${i}`, doc));
+    referenceCorpus.neutral.forEach((doc, i) => corpus.addDoc(`neutral_${i}`, doc));
+    corpus.addDoc('query', text);
+    
+    let wokeSim = 0;
+    let antiSim = 0;
+    for (let i = 0; i < referenceCorpus.woke.length; i++) {
+        const sim = corpus.similarity('query', `woke_${i}`);
+        wokeSim = Math.max(wokeSim, sim);
+    }
+    for (let i = 0; i < referenceCorpus.antiWoke.length; i++) {
+        const sim = corpus.similarity('query', `anti_${i}`);
+        antiSim = Math.max(antiSim, sim);
+    }
+    const corpusScore = 50 + (wokeSim - antiSim) * 50;
+    
+    const entities = extractEntities(text);
+    let wikiScore = 50;
+    if (entities.length > 0) {
+        const wikiDetails = await checkWikipedia(entities[0]);
+        if (wikiDetails.found) wikiScore = wikiDetails.score;
+    }
+    
+    const rawCombinedScore = (keywordResult.score * 0.4) + (corpusScore * 0.4) + (wikiScore * 0.2);
+    const finalScore = amplifyScore(rawCombinedScore);
+    
+    return { finalScore, keywordResult, corpusScore, wikiScore };
+}
+
+// TAB SWITCHING
+function switchTab(tabName) {
+    if (!isPro && tabName !== 'scan') {
+        showToast('Upgrade to Pro to access this feature!');
+        return;
+    }
+    
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabName + 'TabContent').classList.add('active');
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    currentTab = tabName;
+    
+    if (tabName === 'history') updateHistoryDisplay();
+    if (tabName === 'trends') updateTrendsDisplay();
+}
+
+function updateResults(finalScore, rawScore, breakdown, source) {
+    const needle = document.getElementById('gaugeNeedle');
+    const status = document.getElementById('statusText');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const rawScoreDisplay = document.getElementById('rawScore');
+    const results = document.getElementById('results');
+    const analysisText = document.getElementById('analysisText');
+    const analysisBreakdown = document.getElementById('analysisBreakdown');
+    const breakdownContent = document.getElementById('breakdownContent');
+    
+    const rotation = -90 + (finalScore / 100 * 180);
+    needle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+    
+    scoreDisplay.textContent = Math.round(finalScore) + '%';
+    
+    let sourceLabel = source === 'url' ? ' (from URL)' : '';
+    rawScoreDisplay.innerHTML = `Raw: ${Math.round(rawScore)}% → <strong>EXTREME ${AMPLIFICATION}x:</strong> ${Math.round(finalScore)}%${sourceLabel}`;
+    
+    if (finalScore < 30) {
+        status.textContent = '✅ NOT WOKE';
+        status.style.color = COLORS.safe;
+        scoreDisplay.style.color = COLORS.safe;
+    } else if (finalScore < 70) {
+        status.textContent = '⚠️ MODERATE';
+        status.style.color = COLORS.moderate;
+        scoreDisplay.style.color = COLORS.moderate;
+    } else {
+        status.textContent = '🚨 VERY WOKE';
+        status.style.color = COLORS.critical;
+        scoreDisplay.style.color = COLORS.critical;
+    }
+    
+    let analysis = '';
+    
+    if (breakdown.keyword.priorityMatches && breakdown.keyword.priorityMatches.length > 0) {
+        analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;"><strong>⚡ Priority Phrases:</strong> ${breakdown.keyword.priorityMatches.slice(0, 3).join(', ')}</p>`;
+    }
+    
+    if (breakdown.keyword.matchedWoke.length > 0) {
+        const nonPriority = breakdown.keyword.matchedWoke.filter(m => !m.includes('priority')).slice(0, 5);
+        if (nonPriority.length > 0) {
+            analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;">⚡ Woke terms: ${nonPriority.join(', ')}</p>`;
+        }
+    }
+    if (breakdown.keyword.matchedAnti.length > 0) {
+        analysis += `<p style="color: ${COLORS.safe}; margin-bottom: 8px;">🛡️ Traditional terms: ${breakdown.keyword.matchedAnti.slice(0, 5).join(', ')}</p>`;
+    }
+    if (breakdown.keyword.contextSwitches > 0) {
+        analysis += `<p style="color: ${COLORS.moderate}; margin-bottom: 8px;">🔄 Context switches: ${breakdown.keyword.contextSwitches}</p>`;
+    }
+    analysisText.innerHTML = analysis || '<p style="color: var(--text-secondary);">No strong keyword matches. Relied on corpus analysis.</p>';
+    
+    analysisBreakdown.style.display = 'block';
+    breakdownContent.innerHTML = `
+        <div class="source-item">
+            <span class="source-name">📋 Context-Aware Keywords (40%)</span>
+            <span class="source-score" style="color: ${breakdown.keyword.score < 30 ? COLORS.safe : breakdown.keyword.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(breakdown.keyword.score)}%</span>
+        </div>
+        <div class="source-item">
+            <span class="source-name">📚 Corpus Similarity (40%)</span>
+            <span class="source-score" style="color: ${breakdown.corpus.score < 30 ? COLORS.safe : breakdown.corpus.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(breakdown.corpus.score)}%</span>
+            <span class="source-raw">W:${(breakdown.corpus.wokeSim * 100).toFixed(0)}% A:${(breakdown.corpus.antiSim * 100).toFixed(0)}%</span>
+        </div>
+        <div class="source-item">
+            <span class="source-name">🌐 Wikipedia Lookup (20%)</span>
+            <span class="source-score" style="color: ${breakdown.wiki.score < 30 ? COLORS.safe : breakdown.wiki.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(breakdown.wiki.score)}%</span>
+            <span class="source-raw">${breakdown.wiki.found ? breakdown.wiki.entity : 'N/A'}</span>
+        </div>
+        <div class="source-item" style="border-top: 2px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
+            <span class="source-name"><strong>Combined (Raw)</strong></span>
+            <span class="source-score">${Math.round((breakdown.keyword.score * 0.4 + breakdown.corpus.score * 0.4 + breakdown.wiki.score * 0.2))}%</span>
+        </div>
+        <div class="source-item">
+            <span class="source-name"><strong>🔥 AFTER EXTREME ${AMPLIFICATION}x</strong></span>
+            <span class="source-score" style="color: ${finalScore < 30 ? COLORS.safe : finalScore > 70 ? COLORS.critical : COLORS.moderate}"><strong>${Math.round(finalScore)}%</strong></span>
+        </div>
+    `;
+    
+    results.classList.add('visible');
+}
+
+// APP STATE
+let isPro = false;
+let freeScansUsed = 0;
+let logoClicks = 0;
+let clickTimer = null;
+let currentTab = 'scan';
+
+// Check if Pro was previously purchased
+function checkProStatus() {
+    const purchased = localStorage.getItem('wokedar_pro_purchased');
+    if (purchased === 'true') {
+        isPro = true;
+    }
+}
+
+// Initialize
+checkProStatus();
+updateUI();
+updateHistoryDisplay();
+updateTrendsDisplay();
+
+// Logo click handler (triple-click for manual toggle)
+document.getElementById('logo').addEventListener('click', function() {
+    logoClicks++;
+    if (clickTimer) clearTimeout(clickTimer);
+    clickTimer = setTimeout(() => { logoClicks = 0; }, 500);
+    if (logoClicks >= 3) {
+        logoClicks = 0;
+        clearTimeout(clickTimer);
+        // Manual toggle for testing
+        isPro = !isPro;
+        updateUI();
+        showToast(isPro ? '✅ Pro mode (manual)' : '🔄 Free mode (manual)');
+    }
+});
+
+function updateUI() {
+    const scansRemaining = document.getElementById('scansRemaining');
+    const scansLabel = document.getElementById('scansLabel');
+    const scanCounter = document.getElementById('scanCounter');
+    const upgradeBtnSection = document.getElementById('upgradeBtnSection');
+    const upgradeBanner = document.getElementById('upgradeBanner');
+    const whyPro = document.getElementById('whyPro');
+    const proBadgeContainer = document.getElementById('proBadgeContainer');
+    
+    const historyTab = document.getElementById('historyTab');
+    const compareTab = document.getElementById('compareTab');
+    const trendsTab = document.getElementById('trendsTab');
+    
+    // Update custom phrases section
+    renderCustomPhrasesSection();
+    
+    if (isPro) {
+        scansRemaining.textContent = '200';
+        scansLabel.textContent = 'Pro Daily Scans Remaining';
+        scanCounter.classList.remove('limit');
+        upgradeBtnSection.style.display = 'none';
+        upgradeBanner.style.display = 'none';
+        whyPro.style.display = 'none';
+        proBadgeContainer.innerHTML = '<span class="pro-badge">PRO</span>';
+        
+        historyTab.classList.remove('locked');
+        compareTab.classList.remove('locked');
+        trendsTab.classList.remove('locked');
+    } else {
+        const remaining = 3 - freeScansUsed;
+        scansRemaining.textContent = remaining;
+        scansLabel.textContent = 'Free Daily Scans Remaining';
+        
+        if (remaining <= 0) scanCounter.classList.add('limit');
+        else scanCounter.classList.remove('limit');
+        
+        upgradeBtnSection.style.display = 'block';
+        whyPro.style.display = 'block';
+        if (remaining <= 0) upgradeBanner.classList.add('visible');
+        else upgradeBanner.classList.remove('visible');
+        
+        proBadgeContainer.innerHTML = '';
+        
+        historyTab.classList.add('locked');
+        compareTab.classList.add('locked');
+        trendsTab.classList.add('locked');
+        
+        if (currentTab !== 'scan') {
+            switchTab('scan');
+        }
+    }
+}
+
+function setRegion(region, event) {
+    document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function clearContent() {
+    document.getElementById('textInput').value = '';
+    document.getElementById('urlInput').value = '';
+    document.getElementById('results').classList.remove('visible');
+    document.getElementById('analysisBreakdown').style.display = 'none';
+    document.getElementById('gaugeNeedle').style.transform = 'translateX(-50%) rotate(-90deg)';
+    document.getElementById('statusText').textContent = 'Ready to scan';
+    document.getElementById('statusText').style.color = '#fff';
+    document.getElementById('fetchStatus').style.display = 'none';
+    document.getElementById('sourcePreview').style.display = 'none';
+    fetchedUrlContent = '';
+    currentUrl = '';
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+    </script>
+</body>
+</html>

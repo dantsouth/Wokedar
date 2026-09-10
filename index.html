@@ -236,24 +236,25 @@ input[type="url"] { min-height: auto; height: 50px; }
     color: var(--text-secondary);
     margin-bottom: 15px;
 }
-.strength-btn {
-    transition: all 0.2s;
-    border: 2px solid;
-    cursor: pointer;
+.phrase-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
 }
-.strength-btn:hover {
-    border-color: var(--accent-cyan) !important;
+.phrase-input-row input {
+    flex: 1;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: #fff;
 }
-.strength-btn small {
-    font-size: 10px;
-    opacity: 0.7;
-}
-.custom-phrase-list {
+.phrases-list {
     max-height: 200px;
     overflow-y: auto;
     margin-top: 15px;
 }
-.custom-phrase-item {
+.phrase-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -263,11 +264,11 @@ input[type="url"] { min-height: auto; height: 50px; }
     margin-bottom: 8px;
     font-size: 13px;
 }
-.custom-phrase-item .phrase-text {
+.phrase-item .phrase-text {
     flex: 1;
     color: #fff;
 }
-.custom-phrase-item .phrase-score {
+.phrase-item .phrase-score {
     font-weight: bold;
     margin-right: 10px;
     color: var(--critical);
@@ -283,18 +284,6 @@ input[type="url"] { min-height: auto; height: 50px; }
 }
 .delete-btn:hover {
     background: rgba(255,71,87,0.5);
-}
-.empty-phrases {
-    text-align: center;
-    color: var(--text-secondary);
-    padding: 20px;
-    font-size: 13px;
-}
-.phrase-count {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--text-secondary);
 }
 
 /* PRO LOCKED OVERLAY FOR CUSTOM PHRASES */
@@ -450,10 +439,12 @@ input[type="url"] { min-height: auto; height: 50px; }
 .nav-tab.locked::after { content: " 🔒"; font-size: 10px; }
 
 .upgrade-section { text-align: center; margin: 15px 0; }
-.upgrade-section button {
+.upgrade-section button, .upgrade-section a {
     background: linear-gradient(90deg, var(--accent-gold), #ffaa00);
     color: #000; border: none; padding: 14px 32px;
     border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
 }
 .upgrade-section .sub { 
     color: var(--accent-gold); 
@@ -584,6 +575,41 @@ input[type="url"] { min-height: auto; height: 50px; }
 }
 .source-preview strong {
     color: var(--accent-cyan);
+}
+
+.license-section {
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    text-align: center;
+}
+.license-section h4 {
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+}
+.license-section input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+}
+.license-section button {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.license-section p {
+    font-size: 12px;
+    margin-top: 10px;
+    color: var(--text-secondary);
 }
     </style>
 </head>
@@ -748,7 +774,7 @@ input[type="url"] { min-height: auto; height: 50px; }
         </div>
         
         <div class="upgrade-section" id="upgradeBtnSection">
-            <a href="https://tobindfjt.gumroad.com/l/wokedar" target="_blank" style="display:inline-block;padding:14px 32px;background:linear-gradient(90deg, var(--accent-gold), #ffaa00);color:#000;border:none;border-radius:25px;font-weight:700;font-size:16px;cursor:pointer;text-decoration:none;">⭐ Upgrade to Pro</a>
+            <a href="https://tobindfjt.gumroad.com/l/wokedar" target="_blank">⭐ Upgrade to Pro</a>
             <div class="sub">✓ ONE-TIME PAYMENT • NO SUBSCRIPTION</div>
             <div class="sub-note">Just $3.99 once — never pay again • 200 daily scans</div>
             <div class="payment-guarantee">
@@ -758,7 +784,7 @@ input[type="url"] { min-height: auto; height: 50px; }
             </div>
         </div>
         
-<div class="scan-counter" id="scanCounter">
+        <div class="scan-counter" id="scanCounter">
             <div class="count" id="scansRemaining">3</div>
             <div class="label" id="scansLabel">Free Daily Scans Remaining</div>
         </div>
@@ -771,14 +797,6 @@ input[type="url"] { min-height: auto; height: 50px; }
                 <div class="terms">ONE-TIME PAYMENT • NEVER PAY AGAIN</div>
                 <div class="sublabel">No subscription • No hidden fees • Instant activation</div>
             </div>
-        </div>
-        
-        <div class="license-section" style="margin: 15px 0; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; text-align: center;">
-            <h4 style="color: var(--accent-gold); margin-bottom: 10px;">🔑 Activate with License Key</h4>
-            <input type="text" id="licenseKey" placeholder="Enter your license key" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff;">
-            <button onclick="activateWithKey()" style="padding: 10px 20px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Activate</button>
-            <p id="licenseMessage" style="font-size: 12px; margin-top: 10px; color: var(--text-secondary);"></p>
-        </div>
             
             <ul class="upgrade-benefits">
                 <li><strong>200 daily scans</strong> — vs 3 on free</li>
@@ -800,12 +818,32 @@ input[type="url"] { min-height: auto; height: 50px; }
                 Get Pro for $3.99 — One Time
             </button>
         </div>
+        
+        <!-- LICENSE KEY SECTION -->
+        <div class="license-section" id="licenseSection">
+            <h4>🔑 Activate with License Key</h4>
+            <input type="text" id="licenseKey" placeholder="Enter key (e.g., WOKEDAR-2026-001)" maxlength="20">
+            <button onclick="activateWithKey()">Activate</button>
+            <p id="licenseMessage"></p>
+        </div>
     </div>
     
     <div class="toast" id="toast"></div>
 
     <script>
-     // EXTREME AMPLIFICATION FACTOR
+// APP STATE - MUST BE FIRST
+let isPro = false;
+let freeScansUsed = 0;
+let logoClicks = 0;
+let clickTimer = null;
+let currentTab = 'scan';
+let currentInputMode = 'text';
+let fetchedUrlContent = '';
+let currentUrl = '';
+let customPhrases = [];
+let selectedStrength = 50;
+
+// EXTREME AMPLIFICATION FACTOR
 const AMPLIFICATION = 3.0;
 
 // Valid license keys - add/remove as you sell
@@ -816,24 +854,16 @@ const VALID_KEYS = [
     'WOKEDAR-2026-004',
     'WOKEDAR-2026-005'
 ];
+
 // GUMROAD PAYMENT LINK
 const GUMROAD_PAYMENT_LINK = 'https://tobindfjt.gumroad.com/l/wokedar';
 
-// Color constants for JavaScript (can't use CSS vars in JS)
+// Color constants for JavaScript
 const COLORS = {
     safe: '#00ff88',
     moderate: '#ff9500',
     critical: '#ff4757'
 };
-
-// Current input mode
-let currentInputMode = 'text';
-let fetchedUrlContent = '';
-let currentUrl = '';
-
-// CUSTOM PHRASES STORAGE - now only stores woke phrases
-let customPhrases = JSON.parse(localStorage.getItem('wokedar_custom_phrases') || '[]');
-let selectedStrength = 50;
 
 // BASE PRIORITY PHRASES (built-in)
 const basePriorityPhrases = {
@@ -920,39 +950,6 @@ const basePriorityPhrases = {
     'stolen election': { score: -50, type: 'anti', category: 'election' },
     'rigged election': { score: -45, type: 'anti', category: 'election' },
 };
-
-// COMBINE base + custom phrases (custom phrases are always woke/positive score)
-function getPriorityPhrases() {
-    const combined = { ...basePriorityPhrases };
-    customPhrases.forEach(phrase => {
-        combined[phrase.text] = { 
-            score: phrase.score, 
-            type: 'woke',
-            category: 'custom',
-            isCustom: true
-        };
-    });
-    return combined;
-}
-
-// Activate with license key
-function activateWithKey() {
-    const key = document.getElementById('licenseKey').value.trim().toUpperCase();
-    const messageEl = document.getElementById('licenseMessage');
-    
-    if (VALID_KEYS.includes(key)) {
-        localStorage.setItem('wokedar_pro_purchased', 'true');
-        localStorage.setItem('wokedar_key', key);
-        isPro = true;
-        updateUI();
-        messageEl.textContent = '✅ Pro activated!';
-        messageEl.style.color = '#00ff88';
-        showToast('Pro activated successfully!');
-    } else {
-        messageEl.textContent = '❌ Invalid key';
-        messageEl.style.color = '#ff4757';
-    }
-}
 
 // INDICATORS
 const supportIndicators = [
@@ -1191,6 +1188,306 @@ const referenceCorpus = {
     ]
 };
 
+// COMBINE base + custom phrases (custom phrases are always woke/positive score)
+function getPriorityPhrases() {
+    const combined = { ...basePriorityPhrases };
+    customPhrases.forEach(phrase => {
+        combined[phrase.text] = { 
+            score: phrase.score, 
+            type: 'woke',
+            category: 'custom',
+            isCustom: true
+        };
+    });
+    return combined;
+}
+
+// Activate with license key
+function activateWithKey() {
+    const key = document.getElementById('licenseKey').value.trim().toUpperCase();
+    const messageEl = document.getElementById('licenseMessage');
+    
+    if (VALID_KEYS.includes(key)) {
+        localStorage.setItem('wokedar_pro_purchased', 'true');
+        localStorage.setItem('wokedar_key', key);
+        isPro = true;
+        updateUI();
+        messageEl.textContent = '✅ Pro activated! 200 daily scans unlocked.';
+        messageEl.style.color = '#00ff88';
+        showToast('Pro activated successfully!');
+    } else {
+        messageEl.textContent = '❌ Invalid key. Please check and try again.';
+        messageEl.style.color = '#ff4757';
+    }
+}
+
+// GUMROAD CHECKOUT FUNCTION
+function goToGumroadCheckout() {
+    window.open(GUMROAD_PAYMENT_LINK, '_blank');
+    showToast('Opening secure checkout...');
+}
+
+// CUSTOM PHRASE MANAGEMENT
+function addCustomPhrase() {
+    const phraseInput = document.getElementById('newPhraseInput');
+    const text = phraseInput.value.trim().toLowerCase();
+    
+    if (!text) {
+        showToast('Please enter a phrase');
+        return;
+    }
+    
+    const score = 50; // Default score for custom phrases
+    
+    const existingIndex = customPhrases.findIndex(p => p.text === text);
+    if (existingIndex >= 0) {
+        customPhrases[existingIndex] = { text, score };
+        showToast('Updated: ' + text);
+    } else {
+        customPhrases.push({ text, score });
+        showToast('Added: ' + text);
+    }
+    
+    localStorage.setItem('wokedar_custom_phrases', JSON.stringify(customPhrases));
+    
+    phraseInput.value = '';
+    updateCustomPhraseList();
+}
+
+function deleteCustomPhrase(index) {
+    customPhrases.splice(index, 1);
+    localStorage.setItem('wokedar_custom_phrases', JSON.stringify(customPhrases));
+    updateCustomPhraseList();
+    showToast('Phrase deleted');
+}
+
+function clearAllCustomPhrases() {
+    if (confirm('Clear all custom phrases?')) {
+        customPhrases = [];
+        localStorage.removeItem('wokedar_custom_phrases');
+        updateCustomPhraseList();
+        showToast('All phrases cleared');
+    }
+}
+
+function updateCustomPhraseList() {
+    const listEl = document.getElementById('customPhrasesList');
+    
+    if (customPhrases.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">No custom phrases yet</div>';
+        return;
+    }
+    
+    listEl.innerHTML = customPhrases.map((phrase, index) => `
+        <div class="phrase-item">
+            <span class="phrase-text">"${phrase.text}"</span>
+            <span class="phrase-score">+${phrase.score}</span>
+            <button class="delete-btn" onclick="deleteCustomPhrase(${index})">Delete</button>
+        </div>
+    `).join('');
+}
+
+// RENDER CUSTOM PHRASES SECTION BASED ON PRO STATUS
+function renderCustomPhrasesSection() {
+    const container = document.getElementById('customPhrasesContainer');
+    if (!container) return;
+    
+    if (isPro) {
+        container.innerHTML = `
+            <div class="custom-phrases-section">
+                <h4>📝 Custom Woke Phrases</h4>
+                <p>Add new woke terms as language evolves. These are saved locally and take priority over built-in phrases.</p>
+                
+                <div class="phrase-input-row">
+                    <input type="text" id="newPhraseInput" placeholder="Enter woke phrase (e.g., 'microaggression')" maxlength="50">
+                    <button onclick="addCustomPhrase()" class="btn-primary" style="padding: 10px 20px; border-radius: 8px;">Add</button>
+                </div>
+                
+                <div id="customPhrasesList" class="phrases-list"></div>
+                
+                <button onclick="clearAllCustomPhrases()" class="btn-secondary" style="margin-top: 10px;">Clear All</button>
+            </div>
+        `;
+        
+        updateCustomPhraseList();
+    } else {
+        container.innerHTML = `
+            <div class="custom-phrases-locked">
+                <div class="lock-icon">🔒</div>
+                <h4>Custom Woke Phrases</h4>
+                <p>Add your own woke terms as language evolves. Upgrade to Pro to unlock this feature.</p>
+                <button onclick="goToGumroadCheckout()" class="btn-primary" style="padding: 12px 24px; border-radius: 8px; margin-top: 10px;">Upgrade to Pro - $3.99</button>
+            </div>
+        `;
+    }
+}
+
+// FIXED: Phrase Priority System with custom phrases
+function contextAwareKeywordAnalysis(text) {
+    let keywordScore = 50;
+    let matchedWoke = [];
+    let matchedAnti = [];
+    let contextSwitches = 0;
+    let priorityMatches = [];
+    
+    let lowerText = text.toLowerCase();
+    
+    const priorityPhrases = getPriorityPhrases();
+    
+    for (const [phrase, config] of Object.entries(priorityPhrases)) {
+        if (lowerText.includes(phrase)) {
+            keywordScore += config.score;
+            const source = config.isCustom ? ' (custom)' : '';
+            priorityMatches.push(phrase + ` (${config.score > 0 ? '+' : ''}${config.score}${source})`);
+            
+            if (config.score > 0) {
+                matchedWoke.push(phrase + ' (priority' + source + ')');
+            } else {
+                matchedAnti.push(phrase + ' (priority' + source + ')');
+            }
+            
+            lowerText = lowerText.replaceAll(phrase, ' ');
+        }
+    }
+    
+    alwaysWoke.forEach(word => {
+        if (lowerText.includes(word)) {
+            keywordScore += 40;
+            matchedWoke.push(word + ' (always-woke)');
+            lowerText = lowerText.replaceAll(word, ' ');
+        }
+    });
+    
+    alwaysAntiWoke.forEach(word => {
+        if (lowerText.includes(word)) {
+            keywordScore -= 40;
+            matchedAnti.push(word + ' (always-anti)');
+            lowerText = lowerText.replaceAll(word, ' ');
+        }
+    });
+    
+    Object.entries(contextDependentTopics).forEach(([topic, config]) => {
+        const topicRegex = new RegExp(`\\b${topic}\\b`, 'gi');
+        const matches = lowerText.match(topicRegex);
+        
+        if (matches) {
+            matches.forEach(() => {
+                const topicIndex = lowerText.indexOf(topic);
+                const beforeText = lowerText.slice(0, topicIndex);
+                const afterText = lowerText.slice(topicIndex + topic.length);
+                
+                const beforeWords = beforeText.split(/\s+/).slice(-5);
+                const afterWords = afterText.split(/\s+/).slice(0, 5);
+                const contextWords = [...beforeWords, ...afterWords];
+                
+                const hasSupport = supportIndicators.some(ind => 
+                    contextWords.some(w => w.includes(ind))
+                );
+                
+                const hasOppose = opposeIndicators.some(ind => 
+                    contextWords.some(w => w.includes(ind))
+                );
+                
+                let modifier = 0;
+                
+                if (config.type === 'negative') {
+                    if (hasOppose && !hasSupport) {
+                        modifier = config.weight;
+                        matchedWoke.push(topic + ' (opposed)');
+                    } else if (hasSupport && !hasOppose) {
+                        modifier = -config.weight;
+                        matchedAnti.push(topic + ' (supported)');
+                    } else if (hasSupport && hasOppose) {
+                        modifier = config.weight * 0.5;
+                        contextSwitches++;
+                        matchedWoke.push(topic + ' (mixed)');
+                    } else {
+                        modifier = config.weight * 0.3;
+                        matchedWoke.push(topic + ' (weak)');
+                    }
+                } else if (config.type === 'positive') {
+                    if (hasSupport && !hasOppose) {
+                        modifier = config.weight;
+                        matchedWoke.push(topic + ' (supported)');
+                    } else if (hasOppose && !hasSupport) {
+                        modifier = -config.weight;
+                        matchedAnti.push(topic + ' (opposed)');
+                    } else if (hasSupport && hasOppose) {
+                        modifier = config.weight * 0.5;
+                        contextSwitches++;
+                        matchedWoke.push(topic + ' (mixed)');
+                    } else {
+                        modifier = config.weight * 0.3;
+                        matchedWoke.push(topic + ' (weak)');
+                    }
+                } else {
+                    if (hasSupport && !hasOppose) {
+                        modifier = config.weight;
+                        matchedWoke.push(topic);
+                    } else if (hasOppose && !hasSupport) {
+                        modifier = -config.weight;
+                        matchedAnti.push(topic);
+                    } else if (hasSupport && hasOppose) {
+                        modifier = config.weight * 0.5;
+                        contextSwitches++;
+                        matchedWoke.push(topic + ' (mixed)');
+                    } else {
+                        modifier = config.weight * 0.3;
+                        matchedWoke.push(topic + ' (weak)');
+                    }
+                }
+                
+                keywordScore += modifier;
+            });
+        }
+    });
+    
+    for (let word of wokeWords) {
+        if (lowerText.includes(word.toLowerCase())) {
+            let modifier = 15;
+            
+            const index = lowerText.indexOf(word.toLowerCase());
+            const context = lowerText.substring(Math.max(0, index - 40), Math.min(lowerText.length, index + word.length + 40));
+            
+            for (let neg of negationWords) {
+                if (context.includes(neg)) {
+                    modifier = -20;
+                    break;
+                }
+            }
+            
+            if (modifier > 0) {
+                for (let sup of supportWords) {
+                    if (context.includes(sup)) {
+                        modifier += 5;
+                        break;
+                    }
+                }
+                matchedWoke.push(word);
+            } else {
+                matchedAnti.push(word + ' (rejected)');
+            }
+            
+            keywordScore += modifier;
+        }
+    }
+    
+    for (let word of antiWokeWords) {
+        if (lowerText.includes(word.toLowerCase())) {
+            keywordScore -= 15;
+            matchedAnti.push(word);
+        }
+    }
+    
+    return {
+        score: Math.max(0, Math.min(100, keywordScore)),
+        matchedWoke,
+        matchedAnti,
+        contextSwitches,
+        priorityMatches
+    };
+}
+
 // TF-IDF + COSINE SIMILARITY
 class SimpleCorpus {
     constructor() {
@@ -1333,345 +1630,6 @@ function amplifyScore(score) {
     const distanceFromCenter = score - 50;
     const amplified = 50 + (distanceFromCenter * AMPLIFICATION);
     return Math.max(0, Math.min(100, amplified));
-}
-
-// GUMROAD CHECKOUT FUNCTION
-function goToGumroadCheckout() {
-    // Open Gumroad in new tab
-    window.open(GUMROAD_PAYMENT_LINK, '_blank');
-    showToast('Opening secure checkout...');
-}
-    
-    // Show message while they're checking out
-    showToast('Opening secure checkout...');
-    
-    // Optional: Check if they return and paid (simple polling)
-    // In production, you'd use webhooks instead
-    setTimeout(() => {
-        // For demo: allow manual activation after "payment"
-        if (confirm('Did you complete payment? Click OK to activate Pro.')) {
-            activatePro();
-        }
-    }, 30000); // 30 seconds later
-}
-
-// Activate Pro after successful payment
-function activatePro() {
-    isPro = true;
-    localStorage.setItem('wokedar_pro_purchased', 'true');
-    updateUI();
-    showToast('✅ Pro activated! Thank you for your purchase!');
-}
-
-// CUSTOM PHRASE MANAGEMENT - now only for woke phrases
-function addCustomPhrase() {
-    const phraseInput = document.getElementById('customPhraseInput');
-    const text = phraseInput.value.trim().toLowerCase();
-    
-    if (!text) {
-        showToast('Please enter a phrase');
-        return;
-    }
-    
-    // Always positive score for woke phrases
-    const score = selectedStrength;
-    
-    const existingIndex = customPhrases.findIndex(p => p.text === text);
-    if (existingIndex >= 0) {
-        customPhrases[existingIndex] = { text, score };
-        showToast('Updated: ' + text);
-    } else {
-        customPhrases.push({ text, score });
-        showToast(`Added "${text}" (+${score})`);
-    }
-    
-    localStorage.setItem('wokedar_custom_phrases', JSON.stringify(customPhrases));
-    
-    phraseInput.value = '';
-    updateCustomPhraseList();
-}
-
-function deleteCustomPhrase(index) {
-    customPhrases.splice(index, 1);
-    localStorage.setItem('wokedar_custom_phrases', JSON.stringify(customPhrases));
-    updateCustomPhraseList();
-    showToast('Phrase deleted');
-}
-
-function selectStrength(strength) {
-    selectedStrength = strength;
-    
-    ['btnMild', 'btnStrong', 'btnExtreme'].forEach(id => {
-        const btn = document.getElementById(id);
-        btn.style.borderColor = 'rgba(255,255,255,0.2)';
-        btn.style.background = 'transparent';
-        btn.style.color = '#888';
-        btn.style.borderWidth = '1px';
-    });
-    
-    const selectedBtn = strength === 30 ? document.getElementById('btnMild') : 
-                       strength === 50 ? document.getElementById('btnStrong') : 
-                       document.getElementById('btnExtreme');
-    
-    selectedBtn.style.borderColor = '#00d4ff';
-    selectedBtn.style.borderWidth = '2px';
-    selectedBtn.style.background = 'rgba(0,212,255,0.2)';
-    selectedBtn.style.color = '#fff';
-}
-
-function updateCustomPhraseList() {
-    const listEl = document.getElementById('customPhraseList');
-    const countEl = document.getElementById('phraseCount');
-    
-    countEl.textContent = `${customPhrases.length} custom phrase${customPhrases.length !== 1 ? 's' : ''}`;
-    
-    if (customPhrases.length === 0) {
-        listEl.innerHTML = '<div class="empty-phrases">No custom phrases yet. Add some above!</div>';
-        return;
-    }
-    
-    listEl.innerHTML = customPhrases.map((phrase, index) => `
-        <div class="custom-phrase-item">
-            <span class="phrase-text">"${phrase.text}"</span>
-            <span class="phrase-score">+${phrase.score}</span>
-            <button class="delete-btn" onclick="deleteCustomPhrase(${index})">Delete</button>
-        </div>
-    `).join('');
-}
-
-// RENDER CUSTOM PHRASES SECTION BASED ON PRO STATUS
-function renderCustomPhrasesSection() {
-    const container = document.getElementById('customPhrasesContainer');
-    
-    if (isPro) {
-        // Show simplified custom phrases UI for Pro users - only woke phrases
-        container.innerHTML = `
-            <div class="custom-phrases-section">
-                <h4>📝 Custom Woke Phrases</h4>
-                <p>Add new woke terms as language evolves. These are saved locally and take priority over built-in phrases.</p>
-                
-                <!-- Enter phrase -->
-                <input type="text" id="customPhraseInput" placeholder="Enter woke phrase (e.g., new social justice term)" style="width: 100%; margin-bottom: 15px;" />
-                
-                <!-- Choose strength -->
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Woke-ness strength:</label>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" id="btnMild" class="strength-btn" onclick="selectStrength(30)" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #888;">
-                            Mild<br><small>+30</small>
-                        </button>
-                        <button type="button" id="btnStrong" class="strength-btn" onclick="selectStrength(50)" style="flex: 1; padding: 10px; border-radius: 6px; border: 2px solid #00d4ff; background: rgba(0,212,255,0.2); color: #fff;">
-                            Strong<br><small>+50</small>
-                        </button>
-                        <button type="button" id="btnExtreme" class="strength-btn" onclick="selectStrength(80)" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #888;">
-                            Extreme<br><small>+80</small>
-                        </button>
-                    </div>
-                </div>
-                
-                <button class="btn btn-primary" onclick="addCustomPhrase()" style="width: 100%;">Add Woke Phrase</button>
-                
-                <div class="custom-phrase-list" id="customPhraseList">
-                    <div class="empty-phrases">No custom phrases yet. Add some above!</div>
-                </div>
-                <div class="phrase-count" id="phraseCount">0 custom phrases</div>
-            </div>
-        `;
-        
-        // Initialize button states
-        setTimeout(() => {
-            selectStrength(50);
-            updateCustomPhraseList();
-        }, 0);
-    } else {
-        // Show locked version for free users
-        container.innerHTML = `
-            <div class="custom-phrases-locked">
-                <div class="lock-icon">🔒</div>
-                <h4>📝 Custom Woke Phrases</h4>
-                <p>Add your own woke terms to stay ahead as language evolves. Perfect for detecting new social justice terminology.</p>
-                <button class="btn btn-primary" onclick="goToStripeCheckout()" style="width: 100%; margin-top: 10px;">
-<a href="https://tobindfjt.gumroad.com/l/wokedar" target="_blank" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 0px; display: inline-block; text-align: center; text-decoration: none;">
-    Unlock with Pro — $3.99
-</a>
-                </button>
-            </div>
-        `;
-    }
-}
-
-// FIXED: Phrase Priority System with custom phrases
-function contextAwareKeywordAnalysis(text) {
-    let keywordScore = 50;
-    let matchedWoke = [];
-    let matchedAnti = [];
-    let contextSwitches = 0;
-    let priorityMatches = [];
-    
-    let lowerText = text.toLowerCase();
-    
-    // Get combined phrases (base + custom)
-    const priorityPhrases = getPriorityPhrases();
-    
-    // STEP 1: CHECK PRIORITY PHRASES FIRST
-    for (const [phrase, config] of Object.entries(priorityPhrases)) {
-        if (lowerText.includes(phrase)) {
-            keywordScore += config.score;
-            const source = config.isCustom ? ' (custom)' : '';
-            priorityMatches.push(phrase + ` (${config.score > 0 ? '+' : ''}${config.score}${source})`);
-            
-            if (config.score > 0) {
-                matchedWoke.push(phrase + ' (priority' + source + ')');
-            } else {
-                matchedAnti.push(phrase + ' (priority' + source + ')');
-            }
-            
-            // Remove the matched phrase so it's not double-counted
-            lowerText = lowerText.replaceAll(phrase, ' ');
-        }
-    }
-    
-    // STEP 2: Check always-woke words
-    alwaysWoke.forEach(word => {
-        if (lowerText.includes(word)) {
-            keywordScore += 40;
-            matchedWoke.push(word + ' (always-woke)');
-            lowerText = lowerText.replaceAll(word, ' ');
-        }
-    });
-    
-    // STEP 3: Check always-anti-woke words
-    alwaysAntiWoke.forEach(word => {
-        if (lowerText.includes(word)) {
-            keywordScore -= 40;
-            matchedAnti.push(word + ' (always-anti)');
-            lowerText = lowerText.replaceAll(word, ' ');
-        }
-    });
-    
-    // STEP 4: Context-dependent topics
-    Object.entries(contextDependentTopics).forEach(([topic, config]) => {
-        const topicRegex = new RegExp(`\\b${topic}\\b`, 'gi');
-        const matches = lowerText.match(topicRegex);
-        
-        if (matches) {
-            matches.forEach(() => {
-                const topicIndex = lowerText.indexOf(topic);
-                const beforeText = lowerText.slice(0, topicIndex);
-                const afterText = lowerText.slice(topicIndex + topic.length);
-                
-                const beforeWords = beforeText.split(/\s+/).slice(-5);
-                const afterWords = afterText.split(/\s+/).slice(0, 5);
-                const contextWords = [...beforeWords, ...afterWords];
-                
-                const hasSupport = supportIndicators.some(ind => 
-                    contextWords.some(w => w.includes(ind))
-                );
-                
-                const hasOppose = opposeIndicators.some(ind => 
-                    contextWords.some(w => w.includes(ind))
-                );
-                
-                let modifier = 0;
-                
-                if (config.type === 'negative') {
-                    if (hasOppose && !hasSupport) {
-                        modifier = config.weight;
-                        matchedWoke.push(topic + ' (opposed ✓)');
-                    } else if (hasSupport && !hasOppose) {
-                        modifier = -config.weight;
-                        matchedAnti.push(topic + ' (supported ✗)');
-                    } else if (hasSupport && hasOppose) {
-                        modifier = config.weight * 0.5;
-                        contextSwitches++;
-                        matchedWoke.push(topic + ' (mixed)');
-                    } else {
-                        modifier = config.weight * 0.3;
-                        matchedWoke.push(topic + ' (weak)');
-                    }
-                } else if (config.type === 'positive') {
-                    if (hasSupport && !hasOppose) {
-                        modifier = config.weight;
-                        matchedWoke.push(topic + ' (supported ✓)');
-                    } else if (hasOppose && !hasSupport) {
-                        modifier = -config.weight;
-                        matchedAnti.push(topic + ' (opposed ✗)');
-                    } else if (hasSupport && hasOppose) {
-                        modifier = config.weight * 0.5;
-                        contextSwitches++;
-                        matchedWoke.push(topic + ' (mixed)');
-                    } else {
-                        modifier = config.weight * 0.3;
-                        matchedWoke.push(topic + ' (weak)');
-                    }
-                } else {
-                    if (hasSupport && !hasOppose) {
-                        modifier = config.weight;
-                        matchedWoke.push(topic);
-                    } else if (hasOppose && !hasSupport) {
-                        modifier = -config.weight;
-                        matchedAnti.push(topic);
-                    } else if (hasSupport && hasOppose) {
-                        modifier = config.weight * 0.5;
-                        contextSwitches++;
-                        matchedWoke.push(topic + ' (mixed)');
-                    } else {
-                        modifier = config.weight * 0.3;
-                        matchedWoke.push(topic + ' (weak)');
-                    }
-                }
-                
-                keywordScore += modifier;
-            });
-        }
-    });
-    
-    // STEP 5: Individual woke words
-    for (let word of wokeWords) {
-        if (lowerText.includes(word.toLowerCase())) {
-            let modifier = 15;
-            
-            const index = lowerText.indexOf(word.toLowerCase());
-            const context = lowerText.substring(Math.max(0, index - 40), Math.min(lowerText.length, index + word.length + 40));
-            
-            for (let neg of negationWords) {
-                if (context.includes(neg)) {
-                    modifier = -20;
-                    break;
-                }
-            }
-            
-            if (modifier > 0) {
-                for (let sup of supportWords) {
-                    if (context.includes(sup)) {
-                        modifier += 5;
-                        break;
-                    }
-                }
-                matchedWoke.push(word);
-            } else {
-                matchedAnti.push(word + ' (rejected)');
-            }
-            
-            keywordScore += modifier;
-        }
-    }
-    
-    // STEP 6: Individual anti-woke words
-    for (let word of antiWokeWords) {
-        if (lowerText.includes(word.toLowerCase())) {
-            keywordScore -= 15;
-            matchedAnti.push(word);
-        }
-    }
-    
-    return {
-        score: Math.max(0, Math.min(100, keywordScore)),
-        matchedWoke,
-        matchedAnti,
-        contextSwitches,
-        priorityMatches
-    };
 }
 
 // URL FETCHING
@@ -2081,64 +2039,54 @@ function updateResults(finalScore, rawScore, breakdown, source) {
     let analysis = '';
     
     if (breakdown.keyword.priorityMatches && breakdown.keyword.priorityMatches.length > 0) {
-        analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;"><strong>⚡ Priority Phrases:</strong> ${breakdown.keyword.priorityMatches.slice(0, 3).join(', ')}</p>`;
+        analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;"><strong>⚡ Priority:</strong> ${breakdown.keyword.priorityMatches.slice(0, 3).join(', ')}</p>`;
     }
     
     if (breakdown.keyword.matchedWoke.length > 0) {
         const nonPriority = breakdown.keyword.matchedWoke.filter(m => !m.includes('priority')).slice(0, 5);
         if (nonPriority.length > 0) {
-            analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;">⚡ Woke terms: ${nonPriority.join(', ')}</p>`;
+            analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;">⚡ Woke: ${nonPriority.join(', ')}</p>`;
         }
     }
     if (breakdown.keyword.matchedAnti.length > 0) {
-        analysis += `<p style="color: ${COLORS.safe}; margin-bottom: 8px;">🛡️ Traditional terms: ${breakdown.keyword.matchedAnti.slice(0, 5).join(', ')}</p>`;
+        analysis += `<p style="color: ${COLORS.safe}; margin-bottom: 8px;">🛡️ Traditional: ${breakdown.keyword.matchedAnti.slice(0, 5).join(', ')}</p>`;
     }
-    if (breakdown.keyword.contextSwitches > 0) {
-        analysis += `<p style="color: ${COLORS.moderate}; margin-bottom: 8px;">🔄 Context switches: ${breakdown.keyword.contextSwitches}</p>`;
-    }
-    analysisText.innerHTML = analysis || '<p style="color: var(--text-secondary);">No strong keyword matches. Relied on corpus analysis.</p>';
+    analysisText.innerHTML = analysis || '<p style="color: var(--text-secondary);">No strong keyword matches.</p>';
     
     analysisBreakdown.style.display = 'block';
     breakdownContent.innerHTML = `
         <div class="source-item">
-            <span class="source-name">📋 Context-Aware Keywords (40%)</span>
+            <span class="source-name">📋 Keywords (40%)</span>
             <span class="source-score" style="color: ${breakdown.keyword.score < 30 ? COLORS.safe : breakdown.keyword.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(breakdown.keyword.score)}%</span>
         </div>
         <div class="source-item">
-            <span class="source-name">📚 Corpus Similarity (40%)</span>
+            <span class="source-name">📚 Corpus (40%)</span>
             <span class="source-score" style="color: ${breakdown.corpus.score < 30 ? COLORS.safe : breakdown.corpus.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(breakdown.corpus.score)}%</span>
-            <span class="source-raw">W:${(breakdown.corpus.wokeSim * 100).toFixed(0)}% A:${(breakdown.corpus.antiSim * 100).toFixed(0)}%</span>
         </div>
         <div class="source-item">
-            <span class="source-name">🌐 Wikipedia Lookup (20%)</span>
+            <span class="source-name">🌐 Wikipedia (20%)</span>
             <span class="source-score" style="color: ${breakdown.wiki.score < 30 ? COLORS.safe : breakdown.wiki.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(breakdown.wiki.score)}%</span>
-            <span class="source-raw">${breakdown.wiki.found ? breakdown.wiki.entity : 'N/A'}</span>
         </div>
         <div class="source-item" style="border-top: 2px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
-            <span class="source-name"><strong>Combined (Raw)</strong></span>
-            <span class="source-score">${Math.round((breakdown.keyword.score * 0.4 + breakdown.corpus.score * 0.4 + breakdown.wiki.score * 0.2))}%</span>
-        </div>
-        <div class="source-item">
-            <span class="source-name"><strong>🔥 AFTER EXTREME ${AMPLIFICATION}x</strong></span>
-            <span class="source-score" style="color: ${finalScore < 30 ? COLORS.safe : finalScore > 70 ? COLORS.critical : COLORS.moderate}"><strong>${Math.round(finalScore)}%</strong></span>
+            <span class="source-name"><strong>Combined</strong></span>
+            <span class="source-score"><strong>${Math.round(finalScore)}%</strong></span>
         </div>
     `;
     
     results.classList.add('visible');
 }
 
-// APP STATE
-let isPro = false;
-let freeScansUsed = 0;
-let logoClicks = 0;
-let clickTimer = null;
-let currentTab = 'scan';
-
 // Check if Pro was previously purchased
 function checkProStatus() {
     const purchased = localStorage.getItem('wokedar_pro_purchased');
     if (purchased === 'true') {
         isPro = true;
+    }
+    
+    // Load custom phrases
+    const saved = localStorage.getItem('wokedar_custom_phrases');
+    if (saved) {
+        customPhrases = JSON.parse(saved);
     }
 }
 
@@ -2156,7 +2104,6 @@ document.getElementById('logo').addEventListener('click', function() {
     if (logoClicks >= 3) {
         logoClicks = 0;
         clearTimeout(clickTimer);
-        // Manual toggle for testing
         isPro = !isPro;
         updateUI();
         showToast(isPro ? '✅ Pro mode (manual)' : '🔄 Free mode (manual)');
@@ -2171,12 +2118,12 @@ function updateUI() {
     const upgradeBanner = document.getElementById('upgradeBanner');
     const whyPro = document.getElementById('whyPro');
     const proBadgeContainer = document.getElementById('proBadgeContainer');
+    const licenseSection = document.getElementById('licenseSection');
     
     const historyTab = document.getElementById('historyTab');
     const compareTab = document.getElementById('compareTab');
     const trendsTab = document.getElementById('trendsTab');
     
-    // Update custom phrases section
     renderCustomPhrasesSection();
     
     if (isPro) {
@@ -2187,6 +2134,7 @@ function updateUI() {
         upgradeBanner.style.display = 'none';
         whyPro.style.display = 'none';
         proBadgeContainer.innerHTML = '<span class="pro-badge">PRO</span>';
+        licenseSection.style.display = 'none';
         
         historyTab.classList.remove('locked');
         compareTab.classList.remove('locked');
@@ -2201,6 +2149,7 @@ function updateUI() {
         
         upgradeBtnSection.style.display = 'block';
         whyPro.style.display = 'block';
+        licenseSection.style.display = 'block';
         if (remaining <= 0) upgradeBanner.classList.add('visible');
         else upgradeBanner.classList.remove('visible');
         

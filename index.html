@@ -758,7 +758,7 @@ input[type="url"] { min-height: auto; height: 50px; }
             </div>
         </div>
         
-        <div class="scan-counter" id="scanCounter">
+<div class="scan-counter" id="scanCounter">
             <div class="count" id="scansRemaining">3</div>
             <div class="label" id="scansLabel">Free Daily Scans Remaining</div>
         </div>
@@ -771,6 +771,14 @@ input[type="url"] { min-height: auto; height: 50px; }
                 <div class="terms">ONE-TIME PAYMENT • NEVER PAY AGAIN</div>
                 <div class="sublabel">No subscription • No hidden fees • Instant activation</div>
             </div>
+        </div>
+        
+        <div class="license-section" style="margin: 15px 0; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; text-align: center;">
+            <h4 style="color: var(--accent-gold); margin-bottom: 10px;">🔑 Activate with License Key</h4>
+            <input type="text" id="licenseKey" placeholder="Enter your license key" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff;">
+            <button onclick="activateWithKey()" style="padding: 10px 20px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Activate</button>
+            <p id="licenseMessage" style="font-size: 12px; margin-top: 10px; color: var(--text-secondary);"></p>
+        </div>
             
             <ul class="upgrade-benefits">
                 <li><strong>200 daily scans</strong> — vs 3 on free</li>
@@ -788,7 +796,7 @@ input[type="url"] { min-height: auto; height: 50px; }
                 <span>♾️ Lifetime access</span>
             </div>
             
-            <button class="btn btn-primary" onclick="goToStripeCheckout()" style="margin-top: 15px;">
+            <button class="btn btn-primary" onclick="goToGumroadCheckout()" style="margin-top: 15px;">
                 Get Pro for $3.99 — One Time
             </button>
         </div>
@@ -800,6 +808,14 @@ input[type="url"] { min-height: auto; height: 50px; }
      // EXTREME AMPLIFICATION FACTOR
 const AMPLIFICATION = 3.0;
 
+// Valid license keys - add/remove as you sell
+const VALID_KEYS = [
+    'WOKEDAR-2026-001',
+    'WOKEDAR-2026-002', 
+    'WOKEDAR-2026-003',
+    'WOKEDAR-2026-004',
+    'WOKEDAR-2026-005'
+];
 // GUMROAD PAYMENT LINK
 const GUMROAD_PAYMENT_LINK = 'https://tobindfjt.gumroad.com/l/wokedar';
 
@@ -917,6 +933,25 @@ function getPriorityPhrases() {
         };
     });
     return combined;
+}
+
+// Activate with license key
+function activateWithKey() {
+    const key = document.getElementById('licenseKey').value.trim().toUpperCase();
+    const messageEl = document.getElementById('licenseMessage');
+    
+    if (VALID_KEYS.includes(key)) {
+        localStorage.setItem('wokedar_pro_purchased', 'true');
+        localStorage.setItem('wokedar_key', key);
+        isPro = true;
+        updateUI();
+        messageEl.textContent = '✅ Pro activated!';
+        messageEl.style.color = '#00ff88';
+        showToast('Pro activated successfully!');
+    } else {
+        messageEl.textContent = '❌ Invalid key';
+        messageEl.style.color = '#ff4757';
+    }
 }
 
 // INDICATORS
@@ -1300,10 +1335,12 @@ function amplifyScore(score) {
     return Math.max(0, Math.min(100, amplified));
 }
 
-// STRIPE CHECKOUT FUNCTION
-function goToStripeCheckout() {
-    // Open Stripe Payment Link in new tab
-    window.open(STRIPE_PAYMENT_LINK, '_blank');
+// GUMROAD CHECKOUT FUNCTION
+function goToGumroadCheckout() {
+    // Open Gumroad in new tab
+    window.open(GUMROAD_PAYMENT_LINK, '_blank');
+    showToast('Opening secure checkout...');
+}
     
     // Show message while they're checking out
     showToast('Opening secure checkout...');

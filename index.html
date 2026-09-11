@@ -1420,7 +1420,6 @@ const basePriorityPhrases = {
     'ey': { score: 40, type: 'woke', category: 'lgbtq' },
     'em': { score: 40, type: 'woke', category: 'lgbtq' },
     'eir': { score: 40, type: 'woke', category: 'lgbtq' },
-    've': { score: 40, type: 'woke', category: 'lgbtq' },
     'ver': { score: 40, type: 'woke', category: 'lgbtq' },
     'vis': { score: 40, type: 'woke', category: 'lgbtq' },
     'neopronouns': { score: 45, type: 'woke', category: 'lgbtq' },
@@ -2241,7 +2240,6 @@ const contextDependentTopics = {
     'poc': { weight: 25, type: 'positive' },
     'black lives matter': { weight: 40, type: 'positive' },
     'blm': { weight: 40, type: 'positive' },
-    'all lives matter': { weight: 35, type: 'negative' },
     'critical race theory': { weight: 40, type: 'positive' },
     'crt': { weight: 35, type: 'positive' },
     'intersectionality': { weight: 35, type: 'positive' },
@@ -2810,6 +2808,12 @@ function contextAwareKeywordAnalysis(text) {
             matchedAnti.push(word);
         }
     }
+    
+// DEBUG: Show what's matching
+    console.log("=== ANALYZING:", text.substring(0, 50), "===");
+    console.log("Woke matches:", matchedWoke);
+    console.log("Anti matches:", matchedAnti);
+    console.log("Final keyword score:", keywordScore);
     
     return {
         score: Math.max(0, Math.min(100, keywordScore)),

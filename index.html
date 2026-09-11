@@ -2127,6 +2127,64 @@ const alwaysAntiWoke = [
     'meritocracy','colorblind','all lives matter','blue lives matter',
     'western civilization','judeo-christian','traditional values'
 ];
+// ADVANCED ANALYSIS FEATURES - ADD HERE
+const extendedNegationWords = [
+    'not', 'no', 'never', 'nothing', 'nobody', 'none', 'neither', 'nor',
+    'nowhere', 'hardly', 'scarcely', 'barely', "doesn't", "isn't", "wasn't",
+    "shouldn't", "wouldn't", "couldn't", "can't", "won't", "don't", 'aint',
+    'without', 'against', 'opposed', 'anti', 'versus', 'vs', 'un', 'non',
+    'dis', 'mis', 'in', 'im', 'il', 'ir', 'reject', 'deny', 'refuse',
+    'oppose', 'resist', 'fight', 'combat', 'battle', 'war', 'stop', 'end',
+    'prevent', 'block', 'ban', 'prohibit', 'outlaw', 'criminalize',
+    'illegal', 'forbid', 'bar', 'exclude', 'remove', 'eliminate', 'eradicate'
+];
+
+const intensityModifiers = {
+    'extremely': { multiplier: 1.5, type: 'amplify' },
+    'very': { multiplier: 1.3, type: 'amplify' },
+    'highly': { multiplier: 1.4, type: 'amplify' },
+    'incredibly': { multiplier: 1.5, type: 'amplify' },
+    'absolutely': { multiplier: 1.4, type: 'amplify' },
+    'totally': { multiplier: 1.3, type: 'amplify' },
+    'completely': { multiplier: 1.3, type: 'amplify' },
+    'utterly': { multiplier: 1.5, type: 'amplify' },
+    'radically': { multiplier: 1.4, type: 'amplify' },
+    'militantly': { multiplier: 1.5, type: 'amplify' },
+    'slightly': { multiplier: 0.6, type: 'reduce' },
+    'somewhat': { multiplier: 0.7, type: 'reduce' },
+    'mildly': { multiplier: 0.6, type: 'reduce' },
+    'moderately': { multiplier: 0.8, type: 'reduce' },
+    'kind of': { multiplier: 0.7, type: 'reduce' },
+    'sort of': { multiplier: 0.7, type: 'reduce' },
+    'a bit': { multiplier: 0.6, type: 'reduce' },
+    'a little': { multiplier: 0.6, type: 'reduce' },
+    'barely': { multiplier: 0.5, type: 'reduce' },
+    'hardly': { multiplier: 0.5, type: 'reduce' },
+    'scarcely': { multiplier: 0.5, type: 'reduce' }
+};
+
+const comboMultipliers = {
+    'intersectional_combo': {
+        phrases: ['intersectional', 'feminism', 'racism'],
+        multiplier: 1.3
+    },
+    'climate_justice_combo': {
+        phrases: ['climate', 'justice', 'equity'],
+        multiplier: 1.25
+    },
+    'trans_rights_combo': {
+        phrases: ['trans', 'rights', 'healthcare'],
+        multiplier: 1.3
+    },
+    'abolish_combo': {
+        phrases: ['abolish', 'police', 'prisons'],
+        multiplier: 1.4
+    },
+    'decolonize_combo': {
+        phrases: ['decolonize', 'indigenous', 'land'],
+        multiplier: 1.35
+    }
+};
 
 // CONTEXT-DEPENDENT TOPICS WITH TYPES
 const contextDependentTopics = {
@@ -2316,6 +2374,106 @@ const referenceCorpus = {
     ]
 };
 
+// NEGATION DETECTION FUNCTIONS
+function hasNegation(text) {
+    return extendedNegationWords.some(word => 
+        new RegExp(`\\b${word}\\b`, 'i').test(text)
+    );
+}
+
+function isNearNegation(sentence, phrase) {
+    const words = sentence.toLowerCase().split(/\s+/);
+    const phraseStart = sentence.toLowerCase().indexOf(phrase.toLowerCase());
+    const beforeText = sentence.substring(0, phraseStart).toLowerCase();
+    const beforeWords = beforeText.split(/\s+/).slice(-4);
+    
+    return extendedNegationWords.some(negWord => {
+        const nearBefore = beforeWords.slice(-3).some(w => 
+            w.includes(negWord) || negWord.includes(w)
+        );
+        const inSentence = words.some((word, idx) => {
+            if (word.includes(negWord) || negWord.includes(word)) {
+                const phraseIdx = words.findIndex(w => 
+                    phrase.toLowerCase().includes(w)
+                );
+                return Math.abs(idx - phraseIdx) <= 3;
+            }
+            return false;
+        });
+        return nearBefore || inSentence;
+    });
+}
+
+function findIntensityModifier(sentence, phrase) {
+    const lowerSentence = sentence.toLowerCase();
+    const phrasePos = lowerSentence.indexOf(phrase.toLowerCase());
+    
+    for (const [word, data] of Object.entries(intensityModifiers)) {
+        const wordPos = lowerSentence.indexOf(word.toLowerCase());
+        if (wordPos !== -1) {
+            const distance = Math.abs(wordPos - phrasePos);
+            const wordDistance = distance / 5;
+            if (wordDistance <= 5) {
+                return { word, multiplier: data.multiplier, type: data.type };
+            }
+        }
+    }
+    return null;
+}
+
+function checkComboPhrases(sentence, matchedPhrase) {
+    const lowerSentence = sentence.toLowerCase();
+    
+    for (const [combo, data] of Object.entries(comboMultipliers)) {
+        const phrases = data.phrases;
+        if (phrases.some(p => matchedPhrase.toLowerCase().includes(p.toLowerCase()))) {
+            const otherPhrases = phrases.filter(p => 
+                !matchedPhrase.toLowerCase().includes(p.toLowerCase())
+            );
+            const hasOthers = otherPhrases.some(p => 
+                lowerSentence.includes(p.toLowerCase())
+            );
+            if (hasOthers) {
+                return { combo, multiplier: data.multiplier };
+            }
+        }
+    }
+    return null;
+}
+// AUTO-CATEGORIZE PHRASES
+const categoryMap = {
+    'abortion': ['abortion', 'pro choice', 'pro life', 'reproductive', 'roe', 'wade', 'planned parenthood'],
+    'racial': ['racism', 'racist', 'white privilege', 'black lives', 'blm', 'bipoc', 'decolonize', 'indigenous', 'reparations', 'segregation', 'discrimination'],
+    'climate': ['climate', 'environment', 'green new deal', 'carbon', 'renewable', 'fossil fuel', 'global warming'],
+    'lgbtq': ['trans', 'gay', 'queer', 'pronouns', 'gender', 'lgbt', 'drag', 'nonbinary', 'cisgender', 'deadname'],
+    'feminism': ['feminist', 'feminism', 'patriarchy', 'misogyny', 'women', 'mansplain', 'male privilege', 'toxic masculinity'],
+    'immigration': ['immigration', 'immigrant', 'border', 'deportation', 'ice', 'sanctuary', 'undocumented', 'asylum'],
+    'economic': ['socialism', 'capitalism', 'wealth tax', 'inequality', 'living wage', 'worker rights', 'union'],
+    'general': ['woke', 'problematic', 'normalize', 'validate', 'safe space', 'trigger warning', 'ally']
+};
+
+function getCategoryForPhrase(phrase) {
+    const lowerPhrase = phrase.toLowerCase();
+    for (const [category, keywords] of Object.entries(categoryMap)) {
+        if (keywords.some(kw => lowerPhrase.includes(kw))) return category;
+    }
+    return 'general';
+}
+
+function generateCategoryBreakdown(matchedPhrases) {
+    const categories = {};
+    matchedPhrases.forEach(phrase => {
+        const cleanPhrase = phrase.replace(/ \(.*\)$/, '').toLowerCase();
+        const category = getCategoryForPhrase(cleanPhrase);
+        categories[category] = (categories[category] || 0) + 1;
+    });
+    
+    return Object.entries(categories)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([cat, count]) => `${cat}: ${count}`)
+        .join(', ');
+}
 // COMBINE base + custom phrases (custom phrases are always woke/positive score)
 function getPriorityPhrases() {
     const combined = { ...basePriorityPhrases };
@@ -2460,18 +2618,56 @@ function contextAwareKeywordAnalysis(text) {
     
     let lowerText = text.toLowerCase();
     
-    const priorityPhrases = getPriorityPhrases();
+  const priorityPhrases = getPriorityPhrases();
     
     for (const [phrase, config] of Object.entries(priorityPhrases)) {
         if (lowerText.includes(phrase)) {
-            keywordScore += config.score;
-            const source = config.isCustom ? ' (custom)' : '';
-            priorityMatches.push(phrase + ` (${config.score > 0 ? '+' : ''}${config.score}${source})`);
+            let score = config.score;
+            let isNegated = false;
+            let intensity = 1;
             
-            if (config.score > 0) {
-                matchedWoke.push(phrase + ' (priority' + source + ')');
+            // Check for negation
+            const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+            for (const sentence of sentences) {
+                if (sentence.toLowerCase().includes(phrase) && hasNegation(sentence)) {
+                    if (isNearNegation(sentence, phrase)) {
+                        score *= -0.5;
+                        isNegated = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Check for intensity modifiers
+            const sentenceWithPhrase = sentences.find(s => 
+                s.toLowerCase().includes(phrase)
+            );
+            if (sentenceWithPhrase) {
+                const intensityMod = findIntensityModifier(sentenceWithPhrase, phrase);
+                if (intensityMod) {
+                    intensity = intensityMod.multiplier;
+                    score *= intensity;
+                }
+            }
+            
+            // Check for combo multipliers
+            if (sentenceWithPhrase) {
+                const combo = checkComboPhrases(sentenceWithPhrase, phrase);
+                if (combo) {
+                    score *= combo.multiplier;
+                }
+            }
+            
+            keywordScore += score;
+            
+            const source = config.isCustom ? ' (custom)' : '';
+            const modifier = isNegated ? ' (negated)' : intensity > 1 ? ` (intense: ${intensity}x)` : '';
+            priorityMatches.push(phrase + ` (${score > 0 ? '+' : ''}${score}${source}${modifier})`);
+            
+            if (score > 0) {
+                matchedWoke.push(phrase + ' (priority' + source + modifier + ')');
             } else {
-                matchedAnti.push(phrase + ' (priority' + source + ')');
+                matchedAnti.push(phrase + ' (priority' + source + modifier + ')');
             }
             
             lowerText = lowerText.replaceAll(phrase, ' ');
@@ -3168,6 +3364,11 @@ function updateResults(finalScore, rawScore, breakdown, source) {
     
     if (breakdown.keyword.priorityMatches && breakdown.keyword.priorityMatches.length > 0) {
         analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;"><strong>⚡ Priority:</strong> ${breakdown.keyword.priorityMatches.slice(0, 3).join(', ')}</p>`;
+    }
+	// Category breakdown
+    const categoryBreakdown = generateCategoryBreakdown([...breakdown.keyword.matchedWoke, ...breakdown.keyword.matchedAnti]);
+    if (categoryBreakdown) {
+        analysis += `<p style="color: #888; margin-top: 8px; font-size: 12px;">📊 Categories: ${categoryBreakdown}</p>`;
     }
     
     if (breakdown.keyword.matchedWoke.length > 0) {

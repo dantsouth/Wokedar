@@ -834,6 +834,8 @@ input[type="url"] { min-height: auto; height: 50px; }
 // APP STATE - MUST BE FIRST
 let isPro = false;
 let freeScansUsed = 0;
+let proScansUsed = 0;
+let proScansDate = localStorage.getItem('wokedar_pro_date') || new Date().toDateString();
 let logoClicks = 0;
 let clickTimer = null;
 let currentTab = 'scan';
@@ -3110,12 +3112,29 @@ function amplifyScore(score) {
     const amplified = 50 + (distanceFromCenter * AMPLIFICATION);
     return Math.max(0, Math.min(100, amplified));
 }
-
 async function performAnalysis(text) {
+    // Check scan limits
     if (!isPro && freeScansUsed >= 3) {
         showToast('Free limit reached. Upgrade to Pro!');
         document.getElementById('upgradeBanner').classList.add('visible');
         return;
+    }
+    
+    // Check Pro limit (200 per day)
+    if (isPro) {
+        const today = new Date().toDateString();
+        if (today !== proScansDate) {
+            // New day, reset counter
+            proScansUsed = 0;
+            proScansDate = today;
+            localStorage.setItem('wokedar_pro_date', today);
+            localStorage.setItem('wokedar_pro_scans', 0);
+        }
+        
+        if (proScansUsed >= 200) {
+            showToast('Pro daily limit reached (200). Try again tomorrow.');
+            return;
+        }
     }
     
     const keywordResult = contextAwareKeywordAnalysis(text);
@@ -3161,12 +3180,15 @@ async function performAnalysis(text) {
     
     saveToHistory(text, finalScore);
     
+    // Increment scan counters
     if (!isPro) {
         freeScansUsed++;
-        updateUI();
+    } else {
+        proScansUsed++;
+        localStorage.setItem('wokedar_pro_scans', proScansUsed);
     }
+    updateUI();
 }
-
 // XSS Protection Function
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -3443,6 +3465,14 @@ function checkProStatus() {
     if (saved) {
         customPhrases = JSON.parse(saved);
     }
+    
+    // Load Pro scan count
+    const savedProScans = localStorage.getItem('wokedar_pro_scans');
+    const savedProDate = localStorage.getItem('wokedar_pro_date');
+    if (savedProScans && savedProDate) {
+        proScansUsed = parseInt(savedProScans);
+        proScansDate = savedProDate;
+    }
 }
 
 // Initialize
@@ -3452,16 +3482,25 @@ updateHistoryDisplay();
 updateTrendsDisplay();
 
 // Logo click handler (triple-click for manual toggle)
-document.getElementById('logo').addEventListener('click', function() {
+document.getElementById('logo').addEventListener('click', function(e) {
+    e.preventDefault();
     logoClicks++;
+    
     if (clickTimer) clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => { logoClicks = 0; }, 500);
+    
+    // 800ms window for triple-click
+    clickTimer = setTimeout(() => { 
+        logoClicks = 0; 
+    }, 800);
+    
     if (logoClicks >= 3) {
         logoClicks = 0;
         clearTimeout(clickTimer);
         isPro = !isPro;
+        // Save to localStorage so it persists
+        localStorage.setItem('wokedar_pro_purchased', isPro ? 'true' : 'false');
         updateUI();
-        showToast(isPro ? '✅ Pro mode (manual)' : '🔄 Free mode (manual)');
+        showToast(isPro ? '✅ Pro mode activated!' : '🔄 Free mode');
     }
 });
 
@@ -3482,9 +3521,22 @@ function updateUI() {
     renderCustomPhrasesSection();
     
     if (isPro) {
-        scansRemaining.textContent = '200';
+        // Check if new day and reset
+        const today = new Date().toDateString();
+        if (today !== proScansDate) {
+            proScansUsed = 0;
+            proScansDate = today;
+            localStorage.setItem('wokedar_pro_date', today);
+            localStorage.setItem('wokedar_pro_scans', 0);
+        }
+        
+        const remaining = 200 - proScansUsed;
+        scansRemaining.textContent = remaining;
         scansLabel.textContent = 'Pro Daily Scans Remaining';
-        scanCounter.classList.remove('limit');
+        
+        if (remaining <= 0) scanCounter.classList.add('limit');
+        else scanCounter.classList.remove('limit');
+        
         upgradeBtnSection.style.display = 'none';
         upgradeBanner.style.display = 'none';
         whyPro.style.display = 'none';
@@ -3519,7 +3571,6 @@ function updateUI() {
         }
     }
 }
-
 let recognition = null;
 let isRecording = false;
 

@@ -613,7 +613,7 @@ input[type="url"] { min-height: auto; height: 50px; }
 }
     </style>
 	<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C4L4V5PX28"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -657,10 +657,10 @@ input[type="url"] { min-height: auto; height: 50px; }
         <div class="tab-content active" id="scanTabContent">
             <div class="input-section">
                 <!-- Input Mode Switcher -->
-                <div class="input-modes">
-                    <div class="input-mode active" onclick="setInputMode('text')">📝 Text</div>
-                    <div class="input-mode" onclick="setInputMode('url')">🌐 URL</div>
-                </div>
+              <div class="input-modes">
+				<div class="input-mode active" onclick="setInputMode('text', event)">📝 Text</div>
+					<div class="input-mode" onclick="setInputMode('url', event)">🌐 URL</div>
+					</div>
                 
                 <!-- Text Input -->
                 <div class="text-input-group" id="textInputGroup">
@@ -2560,7 +2560,7 @@ function updateCustomPhraseList() {
     
     listEl.innerHTML = customPhrases.map((phrase, index) => `
         <div class="phrase-item">
-            <span class="phrase-text">"${phrase.text}"</span>
+            <span class="phrase-text">"${escapeHtml(phrase.text)}"</span>
             <span class="phrase-score">+${phrase.score}</span>
             <button class="delete-btn" onclick="deleteCustomPhrase(${index})">Delete</button>
         </div>
@@ -3034,11 +3034,21 @@ async function fetchUrlContent(url) {
     }
 }
 
-function setInputMode(mode) {
+function setInputMode(mode, event) {
     currentInputMode = mode;
     
     document.querySelectorAll('.input-mode').forEach(el => el.classList.remove('active'));
-    event.target.classList.add('active');
+    
+    if (event && event.target) {
+        event.target.classList.add('active');
+    } else {
+        document.querySelectorAll('.input-mode').forEach(el => {
+            if ((mode === 'text' && el.textContent.includes('📝')) ||
+                (mode === 'url' && el.textContent.includes('🌐'))) {
+                el.classList.add('active');
+            }
+        });
+    }
     
     document.getElementById('textInputGroup').style.display = mode === 'text' ? 'block' : 'none';
     document.getElementById('urlInputGroup').style.display = mode === 'url' ? 'block' : 'none';
@@ -3127,7 +3137,7 @@ async function performAnalysis(text, source) {
         keyword: { score: keywordResult.score, matchedWoke: keywordResult.matchedWoke, matchedAnti: keywordResult.matchedAnti, contextSwitches: keywordResult.contextSwitches, priorityMatches: keywordResult.priorityMatches },
         corpus: { score: corpusScore, wokeSim, antiSim },
         wiki: { score: wikiScore, found: wikiFound, entity: entities[0] }
-    }, source);
+}, source);
     
     saveToHistory(text, finalScore, source);
     
@@ -3136,6 +3146,15 @@ async function performAnalysis(text, source) {
         updateUI();
     }
 }
+
+// XSS Protection Function
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+
 
 // SCAN HISTORY
 let scanHistory = JSON.parse(localStorage.getItem('wokedar_history') || '[]');
@@ -3171,7 +3190,7 @@ function updateHistoryDisplay() {
     
     historyList.innerHTML = scanHistory.map((item, index) => `
         <div class="history-item" onclick="loadHistoryItem(${index})">
-            <div class="history-text">${item.text}</div>
+            <div class="history-text">${escapeHtml(item.text)}</div>
             <div class="history-meta">
                 <span class="history-score" style="color: ${item.score < 30 ? COLORS.safe : item.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(item.score)}%</span>
                 ${item.source === 'url' ? '<span class="history-source">🌐 URL</span>' : ''}
@@ -3181,15 +3200,16 @@ function updateHistoryDisplay() {
     `).join('');
 }
 
+
 function loadHistoryItem(index) {
     const item = scanHistory[index];
     if (item.source === 'url' && item.url) {
-        setInputMode('url');
+        setInputMode('url', null);
         document.getElementById('urlInput').value = item.url;
         fetchedUrlContent = item.fullText;
         currentUrl = item.url;
     } else {
-        setInputMode('text');
+        setInputMode('text', null);
         document.getElementById('textInput').value = item.fullText;
     }
     switchTab('scan');
@@ -3363,22 +3383,22 @@ function updateResults(finalScore, rawScore, breakdown, source) {
     let analysis = '';
     
     if (breakdown.keyword.priorityMatches && breakdown.keyword.priorityMatches.length > 0) {
-        analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;"><strong>⚡ Priority:</strong> ${breakdown.keyword.priorityMatches.slice(0, 3).join(', ')}</p>`;
+        analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;"><strong>⚡ Priority:</strong> ${escapeHtml(breakdown.keyword.priorityMatches.slice(0, 3).join(', '))}</p>`;
     }
 	// Category breakdown
     const categoryBreakdown = generateCategoryBreakdown([...breakdown.keyword.matchedWoke, ...breakdown.keyword.matchedAnti]);
     if (categoryBreakdown) {
-        analysis += `<p style="color: #888; margin-top: 8px; font-size: 12px;">📊 Categories: ${categoryBreakdown}</p>`;
+        analysis += `<p style="color: #888; margin-top: 8px; font-size: 12px;">📊 Categories: ${escapeHtml(categoryBreakdown)}</p>`;
     }
     
     if (breakdown.keyword.matchedWoke.length > 0) {
         const nonPriority = breakdown.keyword.matchedWoke.filter(m => !m.includes('priority')).slice(0, 5);
         if (nonPriority.length > 0) {
-            analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;">⚡ Woke: ${nonPriority.join(', ')}</p>`;
+            analysis += `<p style="color: ${COLORS.critical}; margin-bottom: 8px;">⚡ Woke: ${escapeHtml(nonPriority.join(', '))}</p>`;
         }
     }
     if (breakdown.keyword.matchedAnti.length > 0) {
-        analysis += `<p style="color: ${COLORS.safe}; margin-bottom: 8px;">🛡️ Traditional: ${breakdown.keyword.matchedAnti.slice(0, 5).join(', ')}</p>`;
+        analysis += `<p style="color: ${COLORS.safe}; margin-bottom: 8px;">🛡️ Traditional: ${escapeHtml(breakdown.keyword.matchedAnti.slice(0, 5).join(', '))}</p>`;
     }
     analysisText.innerHTML = analysis || '<p style="color: var(--text-secondary);">No strong keyword matches.</p>';
     

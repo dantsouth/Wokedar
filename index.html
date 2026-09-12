@@ -3122,28 +3122,32 @@ async function fetchUrlContent(url) {
     previewEl.style.display = 'none';
     
     try {
+        // Try multiple proxies with proper response handling
         const proxies = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-            `https://corsproxy.io/?${encodeURIComponent(url)}`,
-            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+            `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+            `https://corsproxy.io/?${encodeURIComponent(url)}`
         ];
         
-        let response = null;
+        let html = null;
         
         for (const proxyUrl of proxies) {
             try {
-                response = await fetch(proxyUrl, { timeout: 10000 });
-                if (response.ok) break;
+                const response = await fetch(proxyUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    // allorigins returns { contents: html }
+                    html = data.contents || data;
+                    break;
+                }
             } catch (e) {
+                console.log('Proxy failed:', proxyUrl);
                 continue;
             }
         }
         
-        if (!response || !response.ok) {
+        if (!html) {
             throw new Error('Could not fetch URL through proxies');
         }
-        
-        const html = await response.text();
         
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');

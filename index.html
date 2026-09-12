@@ -666,7 +666,8 @@ input[type="url"] { min-height: auto; height: 50px; }
                 <!-- URL Input -->
                 
                 <div class="button-row">
-                    <button class="btn btn-record" onclick="showToast('Audio free for all')">🎤 Record</button>
+                    <button class="btn btn-record" id="recordBtn" onclick="toggleRecording()">🎤 Record</button>
+<div id="recordingStatus" style="display:none; color:#ff4757; font-size:13px; margin-top:5px;">🔴 Recording...</div>
                     <button class="btn btn-primary" onclick="analyzeContent()">🔍 Analyze</button>
                 </div>
                 <button class="btn btn-secondary" onclick="clearContent()">🗑️ Clear</button>
@@ -3517,6 +3518,73 @@ function updateUI() {
             switchTab('scan');
         }
     }
+}
+
+let recognition = null;
+let isRecording = false;
+
+function toggleRecording() {
+    if (!isRecording) {
+        startRecording();
+    } else {
+        stopRecording();
+    }
+}
+
+function startRecording() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showToast('Speech recognition not supported in this browser');
+        return;
+    }
+    
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    
+    recognition.onstart = function() {
+        isRecording = true;
+        document.getElementById('recordBtn').textContent = '⏹️ Stop';
+        document.getElementById('recordingStatus').style.display = 'block';
+        showToast('Recording started...');
+    };
+    
+    recognition.onresult = function(event) {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            }
+        }
+        if (finalTranscript) {
+            document.getElementById('textInput').value += finalTranscript + ' ';
+        }
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        showToast('Recording error: ' + event.error);
+        stopRecording();
+    };
+    
+    recognition.onend = function() {
+        if (isRecording) {
+            recognition.start();
+        }
+    };
+    
+    recognition.start();
+}
+
+function stopRecording() {
+    isRecording = false;
+    if (recognition) {
+        recognition.stop();
+        recognition = null;
+    }
+    document.getElementById('recordBtn').textContent = '🎤 Record';
+    document.getElementById('recordingStatus').style.display = 'none';
+    showToast('Recording stopped');
 }
 
 function setRegion(region, event) {

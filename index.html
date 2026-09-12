@@ -656,11 +656,7 @@ input[type="url"] { min-height: auto; height: 50px; }
         <!-- SCAN TAB -->
         <div class="tab-content active" id="scanTabContent">
             <div class="input-section">
-                <!-- Input Mode Switcher -->
-              <div class="input-modes">
-				<div class="input-mode active" onclick="setInputMode('text', event)">📝 Text</div>
-					<div class="input-mode" onclick="setInputMode('url', event)">🌐 URL</div>
-					</div>
+    
                 
                 <!-- Text Input -->
                 <div class="text-input-group" id="textInputGroup">
@@ -668,11 +664,6 @@ input[type="url"] { min-height: auto; height: 50px; }
                 </div>
                 
                 <!-- URL Input -->
-                <div class="url-input-group" id="urlInputGroup">
-                    <input type="url" id="urlInput" placeholder="https://example.com/article" />
-                    <div class="fetch-status" id="fetchStatus"></div>
-                    <div class="source-preview" id="sourcePreview" style="display: none;"></div>
-                </div>
                 
                 <div class="button-row">
                     <button class="btn btn-record" onclick="showToast('Audio free for all')">🎤 Record</button>
@@ -845,9 +836,6 @@ let freeScansUsed = 0;
 let logoClicks = 0;
 let clickTimer = null;
 let currentTab = 'scan';
-let currentInputMode = 'text';
-let fetchedUrlContent = '';
-let currentUrl = '';
 let customPhrases = [];
 let selectedStrength = 50;
 
@@ -3105,152 +3093,24 @@ function extractEntities(text) {
     return [...new Set(entities)].slice(0, 3);
 }
 
+async function analyzeContent() {
+    const textToAnalyze = document.getElementById('textInput').value.trim();
+    
+    if (!textToAnalyze) {
+        showToast('Please enter text to analyze');
+        return;
+    }
+    
+    await performAnalysis(textToAnalyze);
+}
+
 function amplifyScore(score) {
     const distanceFromCenter = score - 50;
     const amplified = 50 + (distanceFromCenter * AMPLIFICATION);
     return Math.max(0, Math.min(100, amplified));
 }
 
-// URL FETCHING
-async function fetchUrlContent(url) {
-    const statusEl = document.getElementById('fetchStatus');
-    const previewEl = document.getElementById('sourcePreview');
-    
-    statusEl.className = 'fetch-status loading';
-    statusEl.textContent = '🌐 Fetching article...';
-    statusEl.style.display = 'block';
-    previewEl.style.display = 'none';
-    
-    try {
-        // Try multiple proxies with proper response handling
-        const proxies = [
-            `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-            `https://corsproxy.io/?${encodeURIComponent(url)}`
-        ];
-        
-        let html = null;
-        
-        for (const proxyUrl of proxies) {
-            try {
-                const response = await fetch(proxyUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    // allorigins returns { contents: html }
-                    html = data.contents || data;
-                    break;
-                }
-            } catch (e) {
-                console.log('Proxy failed:', proxyUrl);
-                continue;
-            }
-        }
-        
-        if (!html) {
-            throw new Error('Could not fetch URL through proxies');
-        }
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        doc.querySelectorAll('script, style, nav, header, footer, aside').forEach(el => el.remove());
-        
-        const article = doc.querySelector('article') || 
-                       doc.querySelector('main') || 
-                       doc.querySelector('[role="main"]') ||
-                       doc.querySelector('.content') ||
-                       doc.body;
-        
-        let text = article.innerText || article.textContent || '';
-        
-        text = text
-            .replace(/\s+/g, ' ')
-            .replace(/\n+/g, '\n')
-            .trim()
-            .substring(0, 5000);
-        
-        if (text.length < 100) {
-            throw new Error('Could not extract meaningful content from this URL');
-        }
-        
-        fetchedUrlContent = text;
-        currentUrl = url;
-        
-        statusEl.className = 'fetch-status success';
-        statusEl.textContent = `✅ Fetched ${text.length} characters`;
-        
-        const title = doc.querySelector('title')?.textContent || 'Untitled';
-        previewEl.innerHTML = `<strong>${escapeHtml(title)}</strong><br><br>${escapeHtml(text.substring(0, 200))}...`;
-        previewEl.style.display = 'block';
-        
-        return text;
-        
-    } catch (error) {
-        statusEl.className = 'fetch-status error';
-        statusEl.textContent = '❌ Error: ' + error.message;
-        fetchedUrlContent = '';
-        currentUrl = '';
-        return null;
-    }
-}
-
-function setInputMode(mode, event) {
-    currentInputMode = mode;
-    
-    document.querySelectorAll('.input-mode').forEach(el => el.classList.remove('active'));
-    
-    if (event && event.target) {
-        event.target.classList.add('active');
-    } else {
-        document.querySelectorAll('.input-mode').forEach(el => {
-            if ((mode === 'text' && el.textContent.includes('📝')) ||
-                (mode === 'url' && el.textContent.includes('🌐'))) {
-                el.classList.add('active');
-            }
-        });
-    }
-    
-    document.getElementById('textInputGroup').style.display = mode === 'text' ? 'block' : 'none';
-    document.getElementById('urlInputGroup').style.display = mode === 'url' ? 'block' : 'none';
-    
-    if (mode === 'text') {
-        document.getElementById('fetchStatus').style.display = 'none';
-        document.getElementById('sourcePreview').style.display = 'none';
-    }
-}
-
-async function analyzeContent() {
-    let textToAnalyze = '';
-    let source = 'text';
-    
-    if (currentInputMode === 'text') {
-        textToAnalyze = document.getElementById('textInput').value.trim();
-        source = 'text';
-    } else {
-        const url = document.getElementById('urlInput').value.trim();
-        if (!url) {
-            showToast('Please enter a URL');
-            return;
-        }
-        
-        if (!fetchedUrlContent) {
-            textToAnalyze = await fetchUrlContent(url);
-            if (!textToAnalyze) return;
-            source = 'url';
-        } else {
-            textToAnalyze = fetchedUrlContent;
-            source = 'url';
-        }
-    }
-    
-    if (!textToAnalyze) {
-        showToast('Please enter text or a valid URL');
-        return;
-    }
-    
-    await performAnalysis(textToAnalyze, source);
-}
-
-async function performAnalysis(text, source) {
+async function performAnalysis(text) {
     if (!isPro && freeScansUsed >= 3) {
         showToast('Free limit reached. Upgrade to Pro!');
         document.getElementById('upgradeBanner').classList.add('visible');
@@ -3296,9 +3156,9 @@ async function performAnalysis(text, source) {
         keyword: { score: keywordResult.score, matchedWoke: keywordResult.matchedWoke, matchedAnti: keywordResult.matchedAnti, contextSwitches: keywordResult.contextSwitches, priorityMatches: keywordResult.priorityMatches },
         corpus: { score: corpusScore, wokeSim, antiSim },
         wiki: { score: wikiScore, found: wikiFound, entity: entities[0] }
-}, source);
+    }, 'text');
     
-    saveToHistory(text, finalScore, source);
+    saveToHistory(text, finalScore);
     
     if (!isPro) {
         freeScansUsed++;
@@ -3313,18 +3173,14 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-
-
 // SCAN HISTORY
 let scanHistory = JSON.parse(localStorage.getItem('wokedar_history') || '[]');
 
-function saveToHistory(text, score, source) {
+function saveToHistory(text, score) {
     const entry = {
         text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
         fullText: text,
         score: score,
-        source: source,
-        url: source === 'url' ? currentUrl : null,
         date: new Date().toLocaleString(),
         timestamp: Date.now()
     };
@@ -3352,25 +3208,15 @@ function updateHistoryDisplay() {
             <div class="history-text">${escapeHtml(item.text)}</div>
             <div class="history-meta">
                 <span class="history-score" style="color: ${item.score < 30 ? COLORS.safe : item.score > 70 ? COLORS.critical : COLORS.moderate}">${Math.round(item.score)}%</span>
-                ${item.source === 'url' ? '<span class="history-source">🌐 URL</span>' : ''}
                 <span class="history-date">${item.date}</span>
             </div>
         </div>
     `).join('');
 }
 
-
 function loadHistoryItem(index) {
     const item = scanHistory[index];
-    if (item.source === 'url' && item.url) {
-        setInputMode('url', null);
-        document.getElementById('urlInput').value = item.url;
-        fetchedUrlContent = item.fullText;
-        currentUrl = item.url;
-    } else {
-        setInputMode('text', null);
-        document.getElementById('textInput').value = item.fullText;
-    }
+    document.getElementById('textInput').value = item.fullText;
     switchTab('scan');
     showToast('Loaded from history');
 }
@@ -3680,16 +3526,11 @@ function setRegion(region, event) {
 
 function clearContent() {
     document.getElementById('textInput').value = '';
-    document.getElementById('urlInput').value = '';
     document.getElementById('results').classList.remove('visible');
     document.getElementById('analysisBreakdown').style.display = 'none';
     document.getElementById('gaugeNeedle').style.transform = 'translateX(-50%) rotate(-90deg)';
     document.getElementById('statusText').textContent = 'Ready to scan';
     document.getElementById('statusText').style.color = '#fff';
-    document.getElementById('fetchStatus').style.display = 'none';
-    document.getElementById('sourcePreview').style.display = 'none';
-    fetchedUrlContent = '';
-    currentUrl = '';
 }
 
 function showToast(message) {

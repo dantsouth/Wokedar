@@ -1,6 +1,7 @@
 {
   "name": "WokeDar - Woke Detector",
   "short_name": "WokeDar",
+  "description": "Analyze text for political bias and woke content instantly",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f0f0f",

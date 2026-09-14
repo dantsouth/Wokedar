@@ -3667,6 +3667,11 @@ function showToast(message) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
-    </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
 </body>
 </html>

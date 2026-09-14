@@ -618,6 +618,15 @@ input[type="url"] { min-height: auto; height: 50px; }
     .gauge-container { width: 240px; height: 120px; }
     .gauge-ring { width: 240px; height: 240px; }
 }
+
+#definitionDisplay {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
     </style>
 	<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4L4V5PX28"></script>
@@ -3113,6 +3122,59 @@ async function analyzeContent() {
         return;
     }
     
+// DEFINITION MODE - Check if user is asking what woke is
+    const lowerText = textToAnalyze.toLowerCase();
+    const definitionQueries = [
+        // Core definitions
+        'what is woke', 'define woke', 'meaning of woke', 
+        'what does woke mean', 'woke definition', 'explain woke',
+        'what is wokeness', 'define wokeness',
+        
+        // Being/identity questions
+        'what does it mean to be woke',
+        'being woke',
+        'am i woke',
+        'are you woke',
+        'is this woke',
+        
+        // Movement/ideology
+        'woke movement',
+        'woke agenda',
+        'woke culture',
+        'woke ideology',
+        'woke politics',
+        'wokeism',
+        'what is wokeism',
+        
+        // Stay woke
+        'stay woke',
+        'what is stay woke',
+        
+        // Anti/opposition
+        'anti woke',
+        'anti-woke',
+        'not woke',
+        
+        // Detection/checking
+        'woke test',
+        'woke check',
+        'woke detector',
+        'woke scanner',
+        'woke meter',
+        
+        // Simple variations
+        'woke meaning',
+        'woke person',
+        'woke people'
+    ];
+    
+    const isDefinitionQuery = definitionQueries.some(q => lowerText.includes(q));
+    
+    if (isDefinitionQuery) {
+        showDefinitionResponse();
+        return;
+    }
+    
     await performAnalysis(textToAnalyze);
 }
 
@@ -3121,6 +3183,73 @@ function amplifyScore(score) {
     const amplified = 50 + (distanceFromCenter * AMPLIFICATION);
     return Math.max(0, Math.min(100, amplified));
 }
+function showDefinitionResponse() {
+    // Center gauge at neutral (50)
+    const needle = document.getElementById('gaugeNeedle');
+    needle.style.transform = `translateX(-50%) rotate(0deg)`;
+    
+    // Update status
+    const status = document.getElementById('statusText');
+    status.textContent = 'ℹ️ DEFINITION MODE';
+    status.style.color = '#3498db';
+    
+    // Hide the textarea and show definition in its place
+    const textInput = document.getElementById('textInput');
+    const inputSection = document.querySelector('.input-section');
+    
+    // Create definition div that replaces the textarea
+    const defDiv = document.createElement('div');
+    defDiv.id = 'definitionDisplay';
+    defDiv.innerHTML = `
+        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #e94560; border-radius: 12px; padding: 20px; text-align: left;">
+            <h3 style="color: #e94560; margin-bottom: 15px; text-align: center;">🎯 What is "Woke"?</h3>
+            <p style="color: #eaeaea; line-height: 1.6; margin-bottom: 12px;">
+                An ideology viewing society through identity-based oppression lenses—race, gender, sexuality. It pushes <strong style="color: #ffd700;">equity</strong> (equal outcomes) over <strong style="color: #ffd700;">equality</strong> (equal opportunity), systemic guilt over individual merit, and censorship over debate.
+            </p>
+            <p style="color: #eaeaea; line-height: 1.6; margin-bottom: 15px;">
+                Originally "aware of racism," now a comprehensive worldview many see as divisive and authoritarian.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
+                <a href="https://wokedar.com/what-is-woke" target="_blank" style="background: #0f3460; color: #eaeaea; padding: 10px 20px; border-radius: 8px; text-decoration: none;">📖 Deep Dive →</a>
+                <a href="#" onclick="alert('Forum launching soon for Pro users!'); return false;" style="background: #0f3460; color: #eaeaea; padding: 10px 20px; border-radius: 8px; text-decoration: none;">💬 Community (Coming Soon)</a>
+            </div>
+            <p style="text-align: center; color: #ffd700; font-size: 0.9em; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
+                🌟 Pro users get early forum access + custom phrase lists
+            </p>
+            <button onclick="closeDefinition()" style="width: 100%; margin-top: 15px; padding: 12px; background: linear-gradient(90deg, #00d4ff, #7b2cbf); border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer;">✓ Got it</button>
+        </div>
+    `;
+    
+    // Hide textarea and insert definition
+    textInput.style.display = 'none';
+    textInput.parentNode.insertBefore(defDiv, textInput.nextSibling);
+    
+    // Hide the analyze/clear buttons temporarily
+    document.querySelector('.button-row').style.display = 'none';
+    document.querySelector('.btn-secondary').style.display = 'none';
+    
+    showToast('Definition mode activated');
+}
+
+function closeDefinition() {
+    // Remove definition div
+    const defDiv = document.getElementById('definitionDisplay');
+    if (defDiv) defDiv.remove();
+    
+    // Show textarea and buttons again
+    document.getElementById('textInput').style.display = 'block';
+    document.querySelector('.button-row').style.display = 'flex';
+    document.querySelector('.btn-secondary').style.display = 'block';
+    
+    // Clear the input
+    document.getElementById('textInput').value = '';
+    
+    // Reset gauge
+    document.getElementById('gaugeNeedle').style.transform = `translateX(-50%) rotate(-90deg)`;
+    document.getElementById('statusText').textContent = 'Ready to scan';
+    document.getElementById('statusText').style.color = '#fff';
+}
+
 async function performAnalysis(text) {
     // Check scan limits
     if (!isPro && freeScansUsed >= 3) {

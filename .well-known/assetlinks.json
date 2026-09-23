@@ -1,0 +1,8 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+        "namespace": "android_app",
+        "package_name": "com.wokedar.tool",
+        "sha256_cert_fingerprints": ["6994CAB4E54174A71324FDBCBB57B0838C2D64F282A4180A0F05F762435A0155"]
+    }
+}]
